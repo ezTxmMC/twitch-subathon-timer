@@ -1,0 +1,98 @@
+<div class="page-header">
+    <h2>Session Management</h2>
+    <p>Erstelle oder trete einer Subathon Session bei</p>
+</div>
+
+<div id="no-session" class="session-container">
+    <div class="card">
+        <div class="card-header">
+            <h3>Neue Session erstellen</h3>
+        </div>
+        <div class="card-body">
+            <p class="text-muted">Erstelle eine neue Subathon Session und erhalte einen Einladungscode</p>
+            <button class="btn btn-primary" id="create-session-btn">Session erstellen</button>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h3>Session beitreten</h3>
+        </div>
+        <div class="card-body">
+            <p class="text-muted">Trete einer bestehenden Session mit einem Code bei</p>
+            <div class="input-group">
+                <input type="text" class="form-control" id="join-code-input" placeholder="Session Code eingeben">
+                <button class="btn btn-primary" id="join-session-btn">Beitreten</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="active-session" class="session-container hidden">
+    <div class="card">
+        <div class="card-header">
+            <h3>Aktive Session</h3>
+        </div>
+        <div class="card-body">
+            <div class="session-info">
+                <div class="form-group">
+                    <label>Session ID</label>
+                    <div class="session-id-display">
+                        <code id="session-id-text"></code>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Einladungscode</label>
+                    <div class="session-code-display">
+                        <code id="session-code-text"></code>
+                        <button class="btn btn-small btn-secondary" id="copy-code-btn">Kopieren</button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Owner</label>
+                    <p id="session-owner"></p>
+                </div>
+
+                <div class="form-group">
+                    <label>Erstellt am</label>
+                    <p id="session-created"></p>
+                </div>
+            </div>
+
+            <button class="btn btn-danger" id="leave-session-btn">Session verlassen</button>
+        </div>
+    </div>
+</div>
+
+<style>
+    .session-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        gap: 24px;
+    }
+
+    .session-info {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .session-id-display,
+    .session-code-display {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px;
+        background: var(--color-bg-tertiary);
+        border-radius: 8px;
+    }
+
+    .session-code-display code {
+        flex: 1;
+        font-size: 20px;
+        font-weight: 700;
+        letter-spacing: 2px;
+    }
+</style>

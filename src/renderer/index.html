@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subathon Timer</title>
+
+    <link rel="stylesheet" href="styles/variables.css">
+    <link rel="stylesheet" href="styles/reset.css">
+    <link rel="stylesheet" href="styles/layout.css">
+    <link rel="stylesheet" href="styles/components.css">
+    <link rel="stylesheet" href="styles/forms.css">
+    <link rel="stylesheet" href="styles/tables.css">
+    <link rel="stylesheet" href="styles/chat.css">
+    <link rel="stylesheet" href="styles/themes.css">
+</head>
+<body>
+<div class="app-container">
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h1>Subathon</h1>
+        </div>
+
+        <nav class="sidebar-nav">
+            <button class="nav-item active" data-page="dashboard">
+                <span class="nav-icon">📊</span>
+                <span class="nav-label">Dashboard</span>
+            </button>
+
+            <button class="nav-item" data-page="session">
+                <span class="nav-icon">🎯</span>
+                <span class="nav-label">Session</span>
+            </button>
+
+            <button class="nav-item" data-page="channels">
+                <span class="nav-icon">📺</span>
+                <span class="nav-label">Channels</span>
+            </button>
+
+            <button class="nav-item" data-page="twitch">
+                <span class="nav-icon">🟣</span>
+                <span class="nav-label">Twitch</span>
+            </button>
+
+            <button class="nav-item" data-page="timer">
+                <span class="nav-icon">⏱️</span>
+                <span class="nav-label">Timer</span>
+            </button>
+
+            <button class="nav-item" data-page="settings">
+                <span class="nav-icon">⚙️</span>
+                <span class="nav-label">Settings</span>
+            </button>
+
+            <button class="nav-item" data-page="overlay">
+                <span class="nav-icon">🎨</span>
+                <span class="nav-label">Overlay</span>
+            </button>
+
+            <button class="nav-item" data-page="events">
+                <span class="nav-icon">📋</span>
+                <span class="nav-label">Events</span>
+            </button>
+
+            <button class="nav-item" data-page="alerts">
+                <span class="nav-icon">🔔</span>
+                <span class="nav-label">Alerts</span>
+            </button>
+
+            <button class="nav-item" data-page="chat">
+                <span class="nav-icon">💬</span>
+                <span class="nav-label">Chat</span>
+            </button>
+
+            <button class="nav-item" data-page="app-settings">
+                <span class="nav-icon">🔧</span>
+                <span class="nav-label">App Config</span>
+            </button>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <div id="page-container"></div>
+    </main>
+</div>
+
+<script src="scripts/utils.js"></script>
+<script src="scripts/api.js"></script>
+<script src="scripts/app.js"></script>
+</body>
+</html>

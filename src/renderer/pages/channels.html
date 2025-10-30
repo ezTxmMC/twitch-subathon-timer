@@ -1,0 +1,33 @@
+<div class="page-header">
+    <h2>Channel Management</h2>
+    <p>Verwalte alle verbundenen Twitch-Channels</p>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h3>Connected Channels</h3>
+        <span class="badge badge-primary" id="channel-count">0 Channels</span>
+    </div>
+    <div class="card-body">
+        <p class="text-muted">Channels werden automatisch hinzugefügt wenn sich jemand mit Twitch anmeldet und der Session beitritt.</p>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                <tr>
+                    <th>Channel Name</th>
+                    <th>Channel ID</th>
+                    <th>Beigetreten am</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody id="channels-table-body">
+                <tr>
+                    <td colspan="5" class="text-center text-muted">Keine Channels verbunden</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
