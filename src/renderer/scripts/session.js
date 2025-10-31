@@ -41,10 +41,14 @@ function setupSessionPage() {
 }
 
 async function handleCreateSession() {
+  alert("CREATE SESSION");
   console.log("[Session] Create session button clicked!");
   try {
     console.log("[Session] Calling api.createSession()");
-    const session = await api.createSession();
+    const session = await api.createSession(
+      "session" + crypto.randomUUID(),
+      300
+    );
     console.log("[Session] Session created:", session);
     currentSession = session;
     displaySession(session);
@@ -54,7 +58,7 @@ async function handleCreateSession() {
       "success"
     );
   } catch (error) {
-    console.error("[Session] Error creating session:", error);
+    console.log("[Session] Error creating session:" + error);
     showNotification("Fehler", "Session konnte nicht erstellt werden", "error");
     void error;
   }
@@ -121,3 +125,6 @@ function displaySession(session) {
     session.createdAt
   );
 }
+
+// Initialize session page when DOM is ready
+document.addEventListener("DOMContentLoaded", setupSessionPage);

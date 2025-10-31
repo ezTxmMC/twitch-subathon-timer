@@ -1,5 +1,5 @@
 // Timer page setup and handlers
-let timerInterval = null;
+let timerInterval = null; // eslint-disable-line no-unused-vars
 let currentTimerState = {
   seconds: 0,
   running: false,
@@ -36,6 +36,7 @@ function setupTimerPage() {
     if (btn) btn.addEventListener("click", () => handleTestEvent(type));
   });
 
+  setupQuickActions();
   startTimerSync();
 }
 
@@ -50,6 +51,7 @@ async function handleStartTimer() {
     showNotification("Timer gestartet", "Timer läuft", "success");
   } catch (error) {
     showNotification("Fehler", "Timer konnte nicht gestartet werden", "error");
+    void error;
   }
 }
 
@@ -61,6 +63,7 @@ async function handlePauseTimer() {
     showNotification("Timer pausiert", "Timer angehalten", "info");
   } catch (error) {
     showNotification("Fehler", "Timer konnte nicht pausiert werden", "error");
+    void error;
   }
 }
 
@@ -78,6 +81,7 @@ async function handleResetTimer() {
       "Timer konnte nicht zurückgesetzt werden",
       "error"
     );
+    void error;
   }
 }
 
@@ -92,6 +96,7 @@ async function handleAddTime() {
     showNotification("Zeit hinzugefügt", `${seconds}s hinzugefügt`, "success");
   } catch (error) {
     showNotification("Fehler", "Zeit konnte nicht hinzugefügt werden", "error");
+    void error;
   }
 }
 
@@ -103,6 +108,7 @@ async function handleQuickAddTime(seconds) {
     showNotification("Zeit hinzugefügt", `${seconds}s hinzugefügt`, "success");
   } catch (error) {
     console.error("Failed to add time");
+    void error;
   }
 }
 
@@ -135,16 +141,17 @@ function startTimerSync() {
         }
       } catch (error) {
         // Silently fail - keep current state
+        void error;
       }
     }
     updateTimerDisplay();
-  }, 1000);
+  }, 500);
 }
 
 function updateTimerDisplay() {
   const display = document.getElementById("timer-display");
   if (display) {
-    display.textContent = formatTime(currentTimerState.seconds);
+    display.textContent = formatTime(currentTimerState.remainingSeconds);
   }
 
   const status = document.getElementById("timer-status");
@@ -160,3 +167,29 @@ electronAPI.on("timer-update", (timerData) => {
   currentTimerState = timerData;
   updateTimerDisplay();
 });
+
+// Initialize timer page when DOM is loaded
+document.addEventListener("DOMContentLoaded", setupTimerPage);
+// Quick action button handlers and setup
+function setupQuickActions() {
+  const quickActionsContainer = document.querySelector(".quick-actions");
+  if (!quickActionsContainer) return;
+
+  const quickActions = [
+    { seconds: 30, label: "+30s" },
+    { seconds: 60, label: "+1m" },
+    { seconds: 300, label: "+5m" },
+    { seconds: 600, label: "+10m" },
+    { seconds: 1800, label: "+30m" },
+    { seconds: 3600, label: "+1h" },
+  ];
+
+  quickActions.forEach((action) => {
+    const button = document.createElement("button");
+    button.className = "quick-action-btn btn btn-secondary";
+    button.textContent = action.label;
+    button.dataset.seconds = action.seconds;
+    button.addEventListener("click", () => handleQuickAddTime(action.seconds));
+    quickActionsContainer.appendChild(button);
+  });
+}

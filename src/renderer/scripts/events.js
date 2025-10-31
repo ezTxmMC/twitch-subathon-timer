@@ -18,6 +18,9 @@ function setupEventsPage() {
 let eventPollingInterval = null;
 
 function startEventPolling() {
+  if (eventPollingInterval) {
+    clearInterval(eventPollingInterval);
+  }
   eventPollingInterval = setInterval(() => {
     if (currentPage === "events") {
       loadEvents();
@@ -38,6 +41,7 @@ async function loadEvents() {
     displayEvents(events);
   } catch (error) {
     console.error("Failed to load events");
+    void error;
   }
 }
 
@@ -88,3 +92,5 @@ async function handleClearEvents() {
     "info"
   );
 }
+
+document.addEventListener("DOMContentLoaded", setupEventsPage);

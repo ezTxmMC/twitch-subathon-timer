@@ -35,6 +35,7 @@ async function loadSettings() {
       settings.raidSecondsPerViewer;
   } catch (error) {
     console.error("Failed to load settings");
+    void error;
   }
 }
 
@@ -53,6 +54,7 @@ async function loadToggles() {
     document.getElementById("toggle-raid").checked = toggles.raidEnabled;
   } catch (error) {
     console.error("Failed to load toggles");
+    void error;
   }
 }
 
@@ -87,6 +89,7 @@ async function handleSaveSettings() {
     showNotification("Gespeichert", "Event Settings gespeichert", "success");
   } catch (error) {
     showNotification("Fehler", "Speichern fehlgeschlagen", "error");
+    void error;
   }
 }
 
@@ -109,5 +112,9 @@ async function handleSaveToggles() {
     showNotification("Gespeichert", "Event Toggles gespeichert", "success");
   } catch (error) {
     showNotification("Fehler", "Speichern fehlgeschlagen", "error");
+    void error;
   }
 }
+
+// Initialize settings page when DOM is loaded
+document.addEventListener("DOMContentLoaded", setupSettingsPage);

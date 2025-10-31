@@ -16,6 +16,7 @@ async function loadChannels() {
     displayChannels(channels);
   } catch (error) {
     console.error("Failed to load channels");
+    void error;
   }
 }
 
@@ -71,5 +72,8 @@ async function handleRemoveChannel(channelId) {
     showNotification("Channel entfernt", "Channel wurde entfernt", "info");
   } catch (error) {
     showNotification("Fehler", "Channel konnte nicht entfernt werden", "error");
+    void error;
   }
 }
+
+document.addEventListener("DOMContentLoaded", setupChannelsPage);

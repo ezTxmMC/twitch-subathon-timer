@@ -1,14 +1,14 @@
 // Global shared state - accessible by all page modules
-let currentPage = "dashboard";
-let appConfig = null;
-let currentSession = null;
-let twitchUser = null;
+let _currentPage = "dashboard";
+let _appConfig = null;
+let _currentSession = null;
+let _twitchUser = null;
 
 document.addEventListener("DOMContentLoaded", () => {
   setupNavigation();
 
   electronAPI.on("app-ready", (config) => {
-    appConfig = config;
+    _appConfig = config;
     console.log("[App] Ready");
     if (config?.server?.url && typeof api?.setBaseURL === "function") {
       api.setBaseURL(config.server.url);
@@ -33,7 +33,7 @@ function setupNavigation() {
 }
 
 async function loadPage(pageName) {
-  currentPage = pageName;
+  _currentPage = pageName;
 
   const container = document.getElementById("page-container");
 
@@ -94,6 +94,6 @@ async function initializePage(pageName) {
   }
 
   if (typeof setupFn === "function") {
-    await setupFn();
+    setupFn();
   }
 }

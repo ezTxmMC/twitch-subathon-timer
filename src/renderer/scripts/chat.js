@@ -10,7 +10,6 @@ function setupChatPage() {
   const sendBtn = document.getElementById("send-message-btn");
   const messageInput = document.getElementById("chat-message-input");
   const clearBtn = document.getElementById("clear-chat-btn");
-  const autoScrollCheckbox = document.getElementById("chat-auto-scroll");
 
   if (sendBtn) {
     sendBtn.addEventListener("click", handleSendMessage);
@@ -38,6 +37,7 @@ async function loadChatChannels() {
     displayChatChannels(channels);
   } catch (error) {
     console.error("Failed to load chat channels");
+    void error;
   }
 }
 
@@ -130,6 +130,7 @@ async function handleSendMessage() {
       "Nachricht konnte nicht gesendet werden",
       "error"
     );
+    void error;
   }
 }
 
@@ -151,3 +152,5 @@ function escapeHtml(text) {
   div.textContent = text;
   return div.innerHTML;
 }
+
+document.addEventListener("DOMContentLoaded", setupChatPage);

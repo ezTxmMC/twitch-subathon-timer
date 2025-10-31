@@ -35,6 +35,7 @@ async function handleTwitchLogin() {
     }
   } catch (error) {
     showNotification("Fehler", "Twitch Login fehlgeschlagen", "error");
+    void error;
   }
 }
 
@@ -49,6 +50,7 @@ async function handleTwitchLogout() {
     showNotification("Twitch Logout", "Von Twitch getrennt", "info");
   } catch (error) {
     showNotification("Fehler", "Logout fehlgeschlagen", "error");
+    void error;
   }
 }
 
@@ -62,6 +64,7 @@ async function loadTwitchUser() {
     }
   } catch (error) {
     console.error("Failed to load Twitch user");
+    void error;
   }
 }
 
@@ -91,5 +94,8 @@ async function autoAddChannelToSession() {
     );
   } catch (error) {
     console.error("Failed to auto-add channel");
+    void error;
   }
 }
+
+document.addEventListener("DOMContentLoaded", setupTwitchPage);

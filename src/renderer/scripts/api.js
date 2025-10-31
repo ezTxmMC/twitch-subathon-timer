@@ -1,7 +1,7 @@
 (function attachAPI(globalObj) {
   class API {
     constructor() {
-      this.baseURL = "http://localhost:8080/api";
+      this.baseURL = "http://gp01.kernex.host:5020/api";
     }
 
     setBaseURL(serverUrl) {
@@ -39,19 +39,22 @@
       }
     }
 
-    async createSession() {
-      return this.request("/sessions/create", { method: "POST" });
+    async createSession(name, initialSeconds) {
+      return this.request("/session/create", {
+        method: "POST",
+        body: JSON.stringify({ name, initialSeconds }),
+      });
     }
 
     async joinSession(code) {
-      return this.request("/sessions/join", {
+      return this.request("/session/join", {
         method: "POST",
         body: JSON.stringify({ code }),
       });
     }
 
     async getSession(sessionId) {
-      return this.request(`/sessions/${sessionId}`);
+      return this.request(`/session/${sessionId}`);
     }
 
     async getChannels(sessionId) {
@@ -116,9 +119,9 @@
     }
 
     async addTime(sessionId, seconds, reason) {
-      return this.request(`/timer/${sessionId}/add`, {
+      return this.request(`/timer/add-time`, {
         method: "POST",
-        body: JSON.stringify({ seconds, reason }),
+        body: JSON.stringify({ sessionId, seconds, reason }),
       });
     }
   }

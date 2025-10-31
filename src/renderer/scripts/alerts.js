@@ -122,3 +122,5 @@ function handleResetAlert() {
   loadAlert(currentAlertType);
   showNotification("Zurückgesetzt", "Alert auf Standard zurückgesetzt", "info");
 }
+
+document.addEventListener("DOMContentLoaded", setupAlertsPage);
