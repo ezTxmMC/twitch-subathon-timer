@@ -87,14 +87,19 @@ class TwitchAuth {
 
     async exchangeCodeForToken(code) {
         const clientId = this.config.get('twitch.clientId');
+        const clientSecret = this.config.get('twitch.clientSecret');
         const redirectUri = this.config.get('twitch.redirectUri');
+
+        if (!clientSecret) {
+            throw new Error('Twitch Client Secret not configured! Add to .env or config.json');
+        }
 
         const response = await fetch('https://id.twitch.tv/oauth2/token', {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             body: new URLSearchParams({
                 client_id: clientId,
-                client_secret: 'YOUR_CLIENT_SECRET',
+                client_secret: clientSecret,
                 code: code,
                 grant_type: 'authorization_code',
                 redirect_uri: redirectUri
@@ -102,6 +107,8 @@ class TwitchAuth {
         });
 
         if (!response.ok) {
+            const error = await response.text();
+            console.error('[Auth] Token exchange failed:', error);
             throw new Error('Token exchange failed');
         }
 
