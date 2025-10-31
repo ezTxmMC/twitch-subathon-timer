@@ -30,10 +30,10 @@ function setupChatPage() {
 }
 
 async function loadChatChannels() {
-  if (!currentSession) return;
+  if (!_currentSession) return;
 
   try {
-    const channels = await api.getChannels(currentSession.sessionId);
+    const channels = await api.getChannels(_currentSession.sessionId);
     displayChatChannels(channels);
   } catch (error) {
     console.error("Failed to load chat channels");

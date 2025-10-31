@@ -22,14 +22,14 @@ function startEventPolling() {
     clearInterval(eventPollingInterval);
   }
   eventPollingInterval = setInterval(() => {
-    if (currentPage === "events") {
+    if (__currentPage === "events") {
       loadEvents();
     }
   }, 5000);
 }
 
 async function loadEvents() {
-  if (!currentSession) {
+  if (!_currentSession) {
     document.getElementById("events-table-body").innerHTML = `
       <tr><td colspan="7" class="text-center text-muted">Keine aktive Session</td></tr>
     `;
@@ -37,7 +37,7 @@ async function loadEvents() {
   }
 
   try {
-    const events = await api.getEvents(currentSession.sessionId);
+    const events = await api.getEvents(_currentSession.sessionId);
     displayEvents(events);
   } catch (error) {
     console.error("Failed to load events");
@@ -82,7 +82,7 @@ function displayEvents(events) {
 }
 
 async function handleClearEvents() {
-  if (!currentSession) return;
+  if (!_currentSession) return;
 
   if (!confirm("Alle Events wirklich löschen?")) return;
 

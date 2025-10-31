@@ -1,5 +1,5 @@
 // Session page setup and handlers
-// Note: currentSession is a global variable defined in app.js
+// Note: _currentSession is a global variable defined in app.js
 
 function setupSessionPage() {
   console.log("[Session] Setting up session page");
@@ -37,7 +37,7 @@ function setupSessionPage() {
     console.log("[Session] Copy button listener attached");
   }
 
-  loadCurrentSession();
+  load_currentSession();
 }
 
 async function handleCreateSession() {
@@ -50,7 +50,7 @@ async function handleCreateSession() {
       300
     );
     console.log("[Session] Session created:", session);
-    currentSession = session;
+    _currentSession = session;
     displaySession(session);
     showNotification(
       "Session erstellt",
@@ -72,7 +72,7 @@ async function handleJoinSession(code) {
 
   try {
     const session = await api.joinSession(code);
-    currentSession = session;
+    _currentSession = session;
     displaySession(session);
     showNotification(
       "Beigetreten",
@@ -90,7 +90,7 @@ async function handleJoinSession(code) {
 }
 
 function handleLeaveSession() {
-  currentSession = null;
+  _currentSession = null;
   document.getElementById("no-session").classList.remove("hidden");
   document.getElementById("active-session").classList.add("hidden");
   showNotification(
@@ -101,15 +101,15 @@ function handleLeaveSession() {
 }
 
 function handleCopyCode() {
-  if (!currentSession) return;
+  if (!_currentSession) return;
 
-  navigator.clipboard.writeText(currentSession.code);
+  navigator.clipboard.writeText(_currentSession.code);
   showNotification("Kopiert", "Code in Zwischenablage kopiert!", "success");
 }
 
-function loadCurrentSession() {
-  if (currentSession) {
-    displaySession(currentSession);
+function load_currentSession() {
+  if (_currentSession) {
+    displaySession(_currentSession);
   }
 }
 

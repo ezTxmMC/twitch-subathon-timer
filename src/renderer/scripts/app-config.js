@@ -17,7 +17,7 @@ function setupAppConfigPage() {
 async function loadAppConfig() {
   try {
     const config = await electronAPI.config.getAll();
-    appConfig = config;
+    _appConfig = config;
     if (config?.server?.url && typeof api?.setBaseURL === "function") {
       api.setBaseURL(config.server.url);
     }
@@ -119,11 +119,11 @@ async function handleSaveAppConfig() {
     showNotification("Gespeichert", "App Konfiguration gespeichert", "success");
 
     const updatedConfig = await electronAPI.config.getAll();
-    appConfig = updatedConfig;
+    _appConfig = updatedConfig;
     if (updatedConfig?.server?.url && typeof api?.setBaseURL === "function") {
       api.setBaseURL(updatedConfig.server.url);
     }
-    if (typeof currentPage !== "undefined" && currentPage === "overlay") {
+    if (typeof _currentPage !== "undefined" && _currentPage === "overlay") {
       if (typeof setupOverlayPage === "function") {
         await setupOverlayPage();
       }
@@ -139,7 +139,7 @@ async function handleResetAppConfig() {
   try {
     await electronAPI.config.reset();
     await loadAppConfig();
-    if (typeof currentPage !== "undefined" && currentPage === "overlay") {
+    if (typeof _currentPage !== "undefined" && _currentPage === "overlay") {
       if (typeof setupOverlayPage === "function") {
         await setupOverlayPage();
       }

@@ -1,5 +1,5 @@
 // Overlay page setup and handlers
-// Relies on global appConfig defined in app.js
+// Relies on global _appConfig defined in app.js
 
 async function setupOverlayPage() {
   const baseUrl = await getOverlayBaseUrl();
@@ -39,7 +39,7 @@ async function getOverlayBaseUrl() {
   try {
     const config = await electronAPI.config.getAll();
     if (config?.server?.url) {
-      appConfig = config;
+      _appConfig = config;
       return normalizeBaseUrl(config.server.url);
     }
   } catch (error) {
@@ -47,7 +47,7 @@ async function getOverlayBaseUrl() {
   }
 
   console.warn(
-    "[Overlay] Missing appConfig, falling back to default overlay base URL"
+    "[Overlay] Missing _appConfig, falling back to default overlay base URL"
   );
   return fallback;
 }

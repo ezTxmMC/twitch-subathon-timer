@@ -33,7 +33,7 @@ function setupNavigation() {
 }
 
 async function loadPage(pageName) {
-  _currentPage = pageName;
+  __currentPage = pageName;
 
   const container = document.getElementById("page-container");
 

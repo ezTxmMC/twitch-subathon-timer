@@ -16,10 +16,10 @@ function setupSettingsPage() {
 }
 
 async function loadSettings() {
-  if (!currentSession) return;
+  if (!_currentSession) return;
 
   try {
-    const settings = await api.getSettings(currentSession.sessionId);
+    const settings = await api.getSettings(_currentSession.sessionId);
 
     document.getElementById("follow-seconds").value = settings.followSeconds;
     document.getElementById("sub-tier1-seconds").value =
@@ -40,10 +40,10 @@ async function loadSettings() {
 }
 
 async function loadToggles() {
-  if (!currentSession) return;
+  if (!_currentSession) return;
 
   try {
-    const toggles = await api.getToggles(currentSession.sessionId);
+    const toggles = await api.getToggles(_currentSession.sessionId);
 
     document.getElementById("toggle-follow").checked = toggles.followEnabled;
     document.getElementById("toggle-subscription").checked =
@@ -59,7 +59,7 @@ async function loadToggles() {
 }
 
 async function handleSaveSettings() {
-  if (!currentSession) {
+  if (!_currentSession) {
     showNotification("Fehler", "Keine aktive Session", "error");
     return;
   }
@@ -85,7 +85,7 @@ async function handleSaveSettings() {
   };
 
   try {
-    await api.updateSettings(currentSession.sessionId, settings);
+    await api.updateSettings(_currentSession.sessionId, settings);
     showNotification("Gespeichert", "Event Settings gespeichert", "success");
   } catch (error) {
     showNotification("Fehler", "Speichern fehlgeschlagen", "error");
@@ -94,7 +94,7 @@ async function handleSaveSettings() {
 }
 
 async function handleSaveToggles() {
-  if (!currentSession) {
+  if (!_currentSession) {
     showNotification("Fehler", "Keine aktive Session", "error");
     return;
   }
@@ -108,7 +108,7 @@ async function handleSaveToggles() {
   };
 
   try {
-    await api.updateToggles(currentSession.sessionId, toggles);
+    await api.updateToggles(_currentSession.sessionId, toggles);
     showNotification("Gespeichert", "Event Toggles gespeichert", "success");
   } catch (error) {
     showNotification("Fehler", "Speichern fehlgeschlagen", "error");

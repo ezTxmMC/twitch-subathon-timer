@@ -41,13 +41,13 @@ function setupTimerPage() {
 }
 
 async function handleStartTimer() {
-  if (!currentSession) {
+  if (!_currentSession) {
     showNotification("Fehler", "Keine aktive Session", "error");
     return;
   }
 
   try {
-    await api.startTimer(currentSession.sessionId);
+    await api.startTimer(_currentSession.sessionId);
     showNotification("Timer gestartet", "Timer läuft", "success");
   } catch (error) {
     showNotification("Fehler", "Timer konnte nicht gestartet werden", "error");
@@ -56,10 +56,10 @@ async function handleStartTimer() {
 }
 
 async function handlePauseTimer() {
-  if (!currentSession) return;
+  if (!_currentSession) return;
 
   try {
-    await api.pauseTimer(currentSession.sessionId);
+    await api.pauseTimer(_currentSession.sessionId);
     showNotification("Timer pausiert", "Timer angehalten", "info");
   } catch (error) {
     showNotification("Fehler", "Timer konnte nicht pausiert werden", "error");
@@ -68,12 +68,12 @@ async function handlePauseTimer() {
 }
 
 async function handleResetTimer() {
-  if (!currentSession) return;
+  if (!_currentSession) return;
 
   if (!confirm("Timer wirklich zurücksetzen?")) return;
 
   try {
-    await api.resetTimer(currentSession.sessionId);
+    await api.resetTimer(_currentSession.sessionId);
     showNotification("Timer zurückgesetzt", "Timer auf 0 gesetzt", "info");
   } catch (error) {
     showNotification(
@@ -86,13 +86,13 @@ async function handleResetTimer() {
 }
 
 async function handleAddTime() {
-  if (!currentSession) return;
+  if (!_currentSession) return;
 
   const seconds = parseInt(document.getElementById("add-time-seconds").value);
   const reason = document.getElementById("add-time-reason").value;
 
   try {
-    await api.addTime(currentSession.sessionId, seconds, reason);
+    await api.addTime(_currentSession.sessionId, seconds, reason);
     showNotification("Zeit hinzugefügt", `${seconds}s hinzugefügt`, "success");
   } catch (error) {
     showNotification("Fehler", "Zeit konnte nicht hinzugefügt werden", "error");
@@ -101,10 +101,10 @@ async function handleAddTime() {
 }
 
 async function handleQuickAddTime(seconds) {
-  if (!currentSession) return;
+  if (!_currentSession) return;
 
   try {
-    await api.addTime(currentSession.sessionId, seconds, "Quick Add");
+    await api.addTime(_currentSession.sessionId, seconds, "Quick Add");
     showNotification("Zeit hinzugefügt", `${seconds}s hinzugefügt`, "success");
   } catch (error) {
     console.error("Failed to add time");
@@ -113,7 +113,7 @@ async function handleQuickAddTime(seconds) {
 }
 
 async function handleTestEvent(type) {
-  if (!currentSession) return;
+  if (!_currentSession) return;
 
   const testData = {
     follow: { username: "TestFollower" },
@@ -130,10 +130,10 @@ async function handleTestEvent(type) {
 function startTimerSync() {
   timerInterval = setInterval(async () => {
     // Poll the server for timer state
-    if (currentSession) {
+    if (_currentSession) {
       try {
         const response = await fetch(
-          `${api.getBaseURL()}/timer/${currentSession.sessionId}`
+          `${api.getBaseURL()}/timer/${_currentSession.sessionId}`
         );
         if (response.ok) {
           const timerData = await response.json();

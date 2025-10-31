@@ -1,5 +1,5 @@
 // Twitch page setup and handlers
-// Note: twitchUser is a global variable defined in app.js
+// Note: _twitchUser is a global variable defined in app.js
 
 function setupTwitchPage() {
   const loginBtn = document.getElementById("twitch-login-btn");
@@ -21,7 +21,7 @@ async function handleTwitchLogin() {
     const result = await electronAPI.twitch.login();
 
     if (result.success) {
-      twitchUser = result.user;
+      _twitchUser = result.user;
       displayTwitchUser(result.user);
       showNotification(
         "Twitch Login",
@@ -29,7 +29,7 @@ async function handleTwitchLogin() {
         "success"
       );
 
-      if (currentSession) {
+      if (_currentSession) {
         await autoAddChannelToSession();
       }
     }
@@ -42,7 +42,7 @@ async function handleTwitchLogin() {
 async function handleTwitchLogout() {
   try {
     await electronAPI.twitch.logout();
-    twitchUser = null;
+    _twitchUser = null;
 
     document.getElementById("twitch-not-connected").classList.remove("hidden");
     document.getElementById("twitch-connected").classList.add("hidden");
@@ -59,7 +59,7 @@ async function loadTwitchUser() {
     const result = await electronAPI.twitch.getUser();
 
     if (result.success) {
-      twitchUser = result.user;
+      _twitchUser = result.user;
       displayTwitchUser(result.user);
     }
   } catch (error) {
@@ -78,13 +78,13 @@ function displayTwitchUser(user) {
 }
 
 async function autoAddChannelToSession() {
-  if (!currentSession || !twitchUser) return;
+  if (!_currentSession || !twitchUser) return;
 
   try {
-    await api.addChannel(currentSession.sessionId, {
-      channelName: twitchUser.displayName,
-      channelId: twitchUser.id,
-      accessToken: twitchUser.accessToken,
+    await api.addChannel(_currentSession.sessionId, {
+      channelName: _twitchUser.displayName,
+      channelId: _twitchUser.id,
+      accessToken: _twitchUser.accessToken,
     });
 
     showNotification(

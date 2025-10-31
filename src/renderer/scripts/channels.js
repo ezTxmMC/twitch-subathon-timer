@@ -4,7 +4,7 @@ function setupChannelsPage() {
 }
 
 async function loadChannels() {
-  if (!currentSession) {
+  if (!_currentSession) {
     document.getElementById("channels-table-body").innerHTML = `
       <tr><td colspan="5" class="text-center text-muted">Keine aktive Session</td></tr>
     `;
@@ -12,7 +12,7 @@ async function loadChannels() {
   }
 
   try {
-    const channels = await api.getChannels(currentSession.sessionId);
+    const channels = await api.getChannels(_currentSession.sessionId);
     displayChannels(channels);
   } catch (error) {
     console.error("Failed to load channels");
@@ -62,12 +62,12 @@ function displayChannels(channels) {
 }
 
 async function handleRemoveChannel(channelId) {
-  if (!currentSession) return;
+  if (!_currentSession) return;
 
   if (!confirm("Channel wirklich entfernen?")) return;
 
   try {
-    await api.removeChannel(currentSession.sessionId, channelId);
+    await api.removeChannel(_currentSession.sessionId, channelId);
     await loadChannels();
     showNotification("Channel entfernt", "Channel wurde entfernt", "info");
   } catch (error) {
