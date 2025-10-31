@@ -2,13 +2,16 @@ const { app, BrowserWindow, ipcMain } = require("electron");
 const path = require("path");
 const ConfigManager = require("./config");
 const TwitchAuth = require("../twitch/auth");
+const SubathonServer = require("../server");
 
 let mainWindow = null;
 let configManager = null;
 let twitchAuth = null;
+let server = null;
 
 configManager = new ConfigManager();
 twitchAuth = new TwitchAuth(configManager);
+server = new SubathonServer(8080);
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -37,7 +40,15 @@ function createWindow() {
   });
 }
 
-app.whenReady().then(() => {
+app.whenReady().then(async () => {
+  // Start the API server
+  try {
+    await server.start();
+    console.log("[Main] API server started successfully");
+  } catch (error) {
+    console.error("[Main] Failed to start API server:", error);
+  }
+
   createWindow();
 
   app.on("activate", () => {
@@ -50,6 +61,7 @@ app.whenReady().then(() => {
     if (mainWindow) {
       mainWindow.webContents.send("app-ready", {
         config: configManager.getAll(),
+        server: { url: "http://localhost:8080" },
       });
 
       const chatClient = twitchAuth.getChatClient();
@@ -64,7 +76,14 @@ app.whenReady().then(() => {
 
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") {
-    app.quit();
+    // Stop the server before quitting
+    if (server) {
+      server.stop().then(() => {
+        app.quit();
+      });
+    } else {
+      app.quit();
+    }
   }
 });
 
