@@ -15,6 +15,7 @@ class SubathonServer {
     this.eventToggles = new Map();
     this.events = new Map();
     this.timers = new Map();
+    this.timerIntervals = new Map();
 
     this.setupMiddleware();
     this.setupRoutes();
@@ -261,9 +262,12 @@ class SubathonServer {
 
     const timer = this.timers.get(sessionId);
     if (timer && !timer.running) {
-      timer.running = true;
-      timer.startTime = Date.now() - timer.seconds * 1000;
-      this.timers.set(sessionId, timer);
+      const updatedTimer = {
+        ...timer,
+        running: true,
+        startTime: Date.now() - timer.seconds * 1000,
+      };
+      this.timers.set(sessionId, updatedTimer);
 
       // Start timer interval
       this.startTimerInterval(sessionId);
@@ -283,9 +287,18 @@ class SubathonServer {
 
     const timer = this.timers.get(sessionId);
     if (timer && timer.running) {
-      timer.running = false;
-      timer.seconds = Math.floor((Date.now() - timer.startTime) / 1000);
-      this.timers.set(sessionId, timer);
+      const updatedTimer = {
+        ...timer,
+        running: false,
+        seconds: Math.floor((Date.now() - timer.startTime) / 1000),
+      };
+      this.timers.set(sessionId, updatedTimer);
+
+      // Clear the timer interval when paused
+      if (this.timerIntervals.has(sessionId)) {
+        clearInterval(this.timerIntervals.get(sessionId));
+        this.timerIntervals.delete(sessionId);
+      }
 
       console.log(`[Server] Paused timer for session ${sessionId}`);
     }
@@ -321,14 +334,21 @@ class SubathonServer {
 
     const timer = this.timers.get(sessionId);
     if (timer) {
+      let updatedTimer;
       if (timer.running) {
         // If timer is running, we adjust the start time to add time
-        timer.startTime -= seconds * 1000;
+        updatedTimer = {
+          ...timer,
+          startTime: timer.startTime - seconds * 1000,
+        };
       } else {
         // If timer is paused, we directly add seconds
-        timer.seconds += seconds;
+        updatedTimer = {
+          ...timer,
+          seconds: timer.seconds + seconds,
+        };
       }
-      this.timers.set(sessionId, timer);
+      this.timers.set(sessionId, updatedTimer);
 
       // Log the event
       this.addEvent(sessionId, {
@@ -349,12 +369,7 @@ class SubathonServer {
   }
 
   startTimerInterval(sessionId) {
-    // This would normally be handled by a WebSocket or polling
-    // For now, we just update the timer state
-    if (!this.timerIntervals) {
-      this.timerIntervals = new Map();
-    }
-
+    // Clear existing interval if any
     if (this.timerIntervals.has(sessionId)) {
       clearInterval(this.timerIntervals.get(sessionId));
     }
@@ -362,8 +377,11 @@ class SubathonServer {
     const interval = setInterval(() => {
       const timer = this.timers.get(sessionId);
       if (timer && timer.running) {
-        timer.seconds = Math.floor((Date.now() - timer.startTime) / 1000);
-        this.timers.set(sessionId, timer);
+        const updatedTimer = {
+          ...timer,
+          seconds: Math.floor((Date.now() - timer.startTime) / 1000),
+        };
+        this.timers.set(sessionId, updatedTimer);
       } else {
         clearInterval(interval);
         this.timerIntervals.delete(sessionId);

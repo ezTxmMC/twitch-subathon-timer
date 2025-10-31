@@ -78,9 +78,15 @@ app.on("window-all-closed", () => {
   if (process.platform !== "darwin") {
     // Stop the server before quitting
     if (server) {
-      server.stop().then(() => {
-        app.quit();
-      });
+      server
+        .stop()
+        .then(() => {
+          app.quit();
+        })
+        .catch((error) => {
+          console.error("[Main] Error stopping server:", error);
+          app.quit();
+        });
     } else {
       app.quit();
     }
