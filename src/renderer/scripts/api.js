@@ -1,111 +1,139 @@
-class API {
+(function attachAPI(globalObj) {
+  class API {
     constructor() {
-        this.baseURL = 'http://localhost:8080/api';
+      this.baseURL = "http://localhost:8080/api";
+    }
+
+    setBaseURL(serverUrl) {
+      if (!serverUrl || typeof serverUrl !== "string") {
+        return;
+      }
+
+      const normalized = serverUrl.trim().replace(/\/$/, "");
+      this.baseURL = `${normalized}/api`;
+      console.log(`[API] Base URL set to ${this.baseURL}`);
+    }
+
+    getBaseURL() {
+      return this.baseURL;
     }
 
     async request(endpoint, options = {}) {
-        try {
-            const response = await fetch(`${this.baseURL}${endpoint}`, {
-                headers: {
-                    'Content-Type': 'application/json',
-                    ...options.headers
-                },
-                ...options
-            });
+      try {
+        const response = await fetch(`${this.baseURL}${endpoint}`, {
+          headers: {
+            "Content-Type": "application/json",
+            ...options.headers,
+          },
+          ...options,
+        });
 
-            if (!response.ok) {
-                throw new Error(`HTTP ${response.status}`);
-            }
-
-            return await response.json();
-        } catch (error) {
-            console.error(`[API] Error: ${endpoint}`, error);
-            throw error;
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
         }
+
+        return await response.json();
+      } catch (error) {
+        console.error(`[API] Error: ${endpoint}`, error);
+        throw error;
+      }
     }
 
     async createSession() {
-        return this.request('/sessions/create', { method: 'POST' });
+      return this.request("/sessions/create", { method: "POST" });
     }
 
     async joinSession(code) {
-        return this.request('/sessions/join', {
-            method: 'POST',
-            body: JSON.stringify({ code })
-        });
+      return this.request("/sessions/join", {
+        method: "POST",
+        body: JSON.stringify({ code }),
+      });
     }
 
     async getSession(sessionId) {
-        return this.request(`/sessions/${sessionId}`);
+      return this.request(`/sessions/${sessionId}`);
     }
 
     async getChannels(sessionId) {
-        return this.request(`/channels/${sessionId}`);
+      return this.request(`/channels/${sessionId}`);
     }
 
     async addChannel(sessionId, channelData) {
-        return this.request(`/channels/${sessionId}/add`, {
-            method: 'POST',
-            body: JSON.stringify(channelData)
-        });
+      return this.request(`/channels/${sessionId}/add`, {
+        method: "POST",
+        body: JSON.stringify(channelData),
+      });
     }
 
     async removeChannel(sessionId, channelId) {
-        return this.request(`/channels/${sessionId}/${channelId}`, {
-            method: 'DELETE'
-        });
+      return this.request(`/channels/${sessionId}/${channelId}`, {
+        method: "DELETE",
+      });
     }
 
     async getSettings(sessionId) {
-        return this.request(`/settings/${sessionId}`);
+      return this.request(`/settings/${sessionId}`);
     }
 
     async updateSettings(sessionId, settings) {
-        return this.request(`/settings/${sessionId}`, {
-            method: 'PUT',
-            body: JSON.stringify(settings)
-        });
+      return this.request(`/settings/${sessionId}`, {
+        method: "PUT",
+        body: JSON.stringify(settings),
+      });
     }
 
     async getToggles(sessionId) {
-        return this.request(`/event-toggles/${sessionId}`);
+      return this.request(`/event-toggles/${sessionId}`);
     }
 
     async updateToggles(sessionId, toggles) {
-        return this.request(`/event-toggles/${sessionId}`, {
-            method: 'PUT',
-            body: JSON.stringify(toggles)
-        });
+      return this.request(`/event-toggles/${sessionId}`, {
+        method: "PUT",
+        body: JSON.stringify(toggles),
+      });
     }
 
     async getEvents(sessionId) {
-        return this.request(`/events/${sessionId}`);
+      return this.request(`/events/${sessionId}`);
     }
 
     async startTimer(sessionId) {
-        return this.request(`/timer/${sessionId}/start`, {
-            method: 'POST'
-        });
+      return this.request(`/timer/${sessionId}/start`, {
+        method: "POST",
+      });
     }
 
     async pauseTimer(sessionId) {
-        return this.request(`/timer/${sessionId}/pause`, {
-            method: 'POST'
-        });
+      return this.request(`/timer/${sessionId}/pause`, {
+        method: "POST",
+      });
     }
 
     async resetTimer(sessionId) {
-        return this.request(`/timer/${sessionId}/reset`, {
-            method: 'POST'
-        });
+      return this.request(`/timer/${sessionId}/reset`, {
+        method: "POST",
+      });
     }
 
     async addTime(sessionId, seconds, reason) {
-        return this.request(`/timer/${sessionId}/add`, {
-            method: 'POST',
-            body: JSON.stringify({ seconds, reason })
-        });
+      return this.request(`/timer/${sessionId}/add`, {
+        method: "POST",
+        body: JSON.stringify({ seconds, reason }),
+      });
     }
-}
+  }
 
-const api = new API();
+  const apiInstance = new API();
+
+  if (typeof module !== "undefined" && module.exports) {
+    module.exports = {
+      API,
+      api: apiInstance,
+    };
+  }
+
+  if (globalObj) {
+    globalObj.API = API;
+    globalObj.api = apiInstance;
+  }
+})(typeof window !== "undefined" ? window : globalThis);
