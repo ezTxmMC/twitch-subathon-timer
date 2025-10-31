@@ -122,7 +122,23 @@ async function handleTestEvent(type) {
 }
 
 function startTimerSync() {
-  timerInterval = setInterval(updateTimerDisplay, 1000);
+  timerInterval = setInterval(async () => {
+    // Poll the server for timer state
+    if (currentSession) {
+      try {
+        const response = await fetch(
+          `${api.getBaseURL()}/timer/${currentSession.sessionId}`
+        );
+        if (response.ok) {
+          const timerData = await response.json();
+          currentTimerState = timerData;
+        }
+      } catch (error) {
+        // Silently fail - keep current state
+      }
+    }
+    updateTimerDisplay();
+  }, 1000);
 }
 
 function updateTimerDisplay() {

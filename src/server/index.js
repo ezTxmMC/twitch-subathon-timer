@@ -61,6 +61,7 @@ class SubathonServer {
     this.app.get("/api/events/:sessionId", this.getEvents.bind(this));
 
     // Timer routes
+    this.app.get("/api/timer/:sessionId", this.getTimer.bind(this));
     this.app.post("/api/timer/:sessionId/start", this.startTimer.bind(this));
     this.app.post("/api/timer/:sessionId/pause", this.pauseTimer.bind(this));
     this.app.post("/api/timer/:sessionId/reset", this.resetTimer.bind(this));
@@ -236,6 +237,21 @@ class SubathonServer {
   }
 
   // Timer management
+  getTimer(req, res) {
+    const { sessionId } = req.params;
+
+    if (!this.sessions.has(sessionId)) {
+      return res.status(404).json({ error: "Session not found" });
+    }
+
+    const timer = this.timers.get(sessionId);
+    if (timer && timer.running) {
+      // Calculate current seconds if running
+      timer.seconds = Math.floor((Date.now() - timer.startTime) / 1000);
+    }
+    res.json(timer || { seconds: 0, running: false, startTime: null });
+  }
+
   startTimer(req, res) {
     const { sessionId } = req.params;
 
