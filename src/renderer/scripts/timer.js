@@ -1,9 +1,17 @@
 // Timer page setup and handlers
 let timerInterval = null; // eslint-disable-line no-unused-vars
-let currentTimerState = {
+
+// Make currentTimerState globally accessible
+window.currentTimerState = {
   seconds: 0,
+  remainingSeconds: 0,
   running: false,
+  paused: false,
 };
+
+// Alias for local access
+let currentTimerState = window.currentTimerState;
+
 let timerLoaded = false;
 
 console.log("[Timer] Script loaded");
@@ -15,45 +23,78 @@ function setupTimerPage() {
   console.log("[Timer] api available in setupTimerPage:", typeof api, api);
   console.log("[Timer] _currentSession:", _currentSession);
 
-  // Only attach listeners and start sync once
+  // Always update timer display first
+  updateTimerDisplay();
+
+  // Only start sync and setup quick actions once
   if (!timerLoaded) {
-    const startBtn = document.getElementById("start-timer-btn");
-    const pauseBtn = document.getElementById("pause-timer-btn");
-    const resetBtn = document.getElementById("reset-timer-btn");
-    const addTimeBtn = document.getElementById("add-time-btn");
-
-    const quickActionBtns = document.querySelectorAll(".quick-action-btn");
-    const testBtns = {
-      follow: document.getElementById("test-follow-btn"),
-      sub: document.getElementById("test-sub-btn"),
-      giftsub: document.getElementById("test-giftsub-btn"),
-      bits: document.getElementById("test-bits-btn"),
-      raid: document.getElementById("test-raid-btn"),
-    };
-
-    if (startBtn) startBtn.addEventListener("click", handleStartTimer);
-    if (pauseBtn) pauseBtn.addEventListener("click", handlePauseTimer);
-    if (resetBtn) resetBtn.addEventListener("click", handleResetTimer);
-    if (addTimeBtn) addTimeBtn.addEventListener("click", handleAddTime);
-
-    quickActionBtns.forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const seconds = parseInt(btn.dataset.seconds);
-        handleQuickAddTime(seconds);
-      });
-    });
-
-    Object.entries(testBtns).forEach(([type, btn]) => {
-      if (btn) btn.addEventListener("click", () => handleTestEvent(type));
-    });
-
     setupQuickActions();
     startTimerSync();
     timerLoaded = true;
   }
 
-  // Always update timer display when entering the page
-  updateTimerDisplay();
+  // Always re-attach listeners to prevent them from breaking
+  attachTimerEventListeners();
+}
+
+function attachTimerEventListeners() {
+  const startBtn = document.getElementById("start-timer-btn");
+  const pauseBtn = document.getElementById("pause-timer-btn");
+  const resetBtn = document.getElementById("reset-timer-btn");
+  const addTimeBtn = document.getElementById("add-time-btn");
+
+  const testBtns = {
+    follow: document.getElementById("test-follow-btn"),
+    sub: document.getElementById("test-sub-btn"),
+    giftsub: document.getElementById("test-giftsub-btn"),
+    bits: document.getElementById("test-bits-btn"),
+    raid: document.getElementById("test-raid-btn"),
+  };
+
+  // Remove and re-attach main button listeners
+  if (startBtn) {
+    const newBtn = startBtn.cloneNode(true);
+    startBtn.parentNode.replaceChild(newBtn, startBtn);
+    newBtn.addEventListener("click", handleStartTimer);
+  }
+
+  if (pauseBtn) {
+    const newBtn = pauseBtn.cloneNode(true);
+    pauseBtn.parentNode.replaceChild(newBtn, pauseBtn);
+    newBtn.addEventListener("click", handlePauseTimer);
+  }
+
+  if (resetBtn) {
+    const newBtn = resetBtn.cloneNode(true);
+    resetBtn.parentNode.replaceChild(newBtn, resetBtn);
+    newBtn.addEventListener("click", handleResetTimer);
+  }
+
+  if (addTimeBtn) {
+    const newBtn = addTimeBtn.cloneNode(true);
+    addTimeBtn.parentNode.replaceChild(newBtn, addTimeBtn);
+    newBtn.addEventListener("click", handleAddTime);
+  }
+
+  // Re-attach quick action buttons
+  const quickActionBtns = document.querySelectorAll(".quick-action-btn");
+  quickActionBtns.forEach((btn) => {
+    const newBtn = btn.cloneNode(true);
+    btn.parentNode.replaceChild(newBtn, btn);
+    newBtn.addEventListener("click", () => {
+      const seconds = parseInt(newBtn.dataset.seconds);
+      handleQuickAddTime(seconds);
+    });
+  });
+
+  // Re-attach test event buttons
+  Object.entries(testBtns).forEach(([type, btn]) => {
+    if (btn) {
+      const newBtn = btn.cloneNode(true);
+      btn.parentNode.replaceChild(newBtn, btn);
+      newBtn.addEventListener("click", () => handleTestEvent(type));
+    }
+  });
 }
 
 async function handleStartTimer() {
@@ -82,6 +123,7 @@ async function handleStartTimer() {
 
     // Update current state immediately
     currentTimerState.running = true;
+    currentTimerState.paused = false;
 
     // Broadcast timer start to overlays
     electronAPI.server
@@ -110,6 +152,7 @@ async function handlePauseTimer() {
 
     // Update current state immediately
     currentTimerState.running = false;
+    currentTimerState.paused = true;
 
     // Broadcast timer pause to overlays
     electronAPI.server
@@ -141,6 +184,7 @@ async function handleResetTimer() {
     // Update current state immediately
     currentTimerState.remainingSeconds = 0;
     currentTimerState.running = false;
+    currentTimerState.paused = false;
 
     // Broadcast timer reset to overlays
     electronAPI.server
@@ -317,10 +361,20 @@ function updateTimerDisplay() {
 
   const status = document.getElementById("timer-status");
   if (status) {
-    status.textContent = currentTimerState.running ? "Running" : "Stopped";
-    status.className = `badge ${
-      currentTimerState.running ? "badge-success" : "badge-danger"
-    }`;
+    // Set status text and badge color
+    let statusText = "Stopped";
+    let badgeClass = "badge-danger";
+
+    if (currentTimerState.running) {
+      statusText = "Running";
+      badgeClass = "badge-success";
+    } else if (currentTimerState.paused) {
+      statusText = "Paused";
+      badgeClass = "badge-warning";
+    }
+
+    status.textContent = statusText;
+    status.className = `badge ${badgeClass}`;
   }
 }
 

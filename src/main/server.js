@@ -143,8 +143,9 @@ class IntegratedServer {
       });
     });
 
-    this.app.post("/api/timer/start", (req, res) => {
-      console.log("[API] Start timer");
+    this.app.post("/api/timer/:sessionId/start", (req, res) => {
+      const { sessionId } = req.params;
+      console.log("[Server API] Start timer:", sessionId);
 
       // Broadcast timer start to overlays
       this.broadcast({
@@ -155,8 +156,9 @@ class IntegratedServer {
       res.json({ success: true });
     });
 
-    this.app.post("/api/timer/pause", (req, res) => {
-      console.log("[API] Pause timer");
+    this.app.post("/api/timer/:sessionId/pause", (req, res) => {
+      const { sessionId } = req.params;
+      console.log("[Server API] Pause timer:", sessionId);
 
       this.broadcast({
         type: "timer-pause",
@@ -166,8 +168,9 @@ class IntegratedServer {
       res.json({ success: true });
     });
 
-    this.app.post("/api/timer/reset", (req, res) => {
-      console.log("[API] Reset timer");
+    this.app.post("/api/timer/:sessionId/reset", (req, res) => {
+      const { sessionId } = req.params;
+      console.log("[Server API] Reset timer:", sessionId);
 
       this.broadcast({
         type: "timer-reset",
@@ -177,17 +180,18 @@ class IntegratedServer {
       res.json({ success: true });
     });
 
-    this.app.post("/api/timer/add", (req, res) => {
-      const { minutes } = req.body;
-      console.log("[API] Add time:", minutes);
+    this.app.post("/api/timer/:sessionId/add", (req, res) => {
+      const { sessionId } = req.params;
+      const { seconds } = req.body;
+      console.log("[Server API] Add time:", sessionId, seconds);
 
       this.broadcast({
         type: "timer-add",
-        minutes: parseInt(minutes),
+        seconds: parseInt(seconds),
         timestamp: Date.now(),
       });
 
-      res.json({ success: true, minutes: parseInt(minutes) });
+      res.json({ success: true, seconds: parseInt(seconds) });
     });
 
     // Channels endpoint

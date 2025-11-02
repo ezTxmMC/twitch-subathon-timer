@@ -3,25 +3,34 @@ let settingsLoaded = false;
 // Settings page setup and handlers
 // eslint-disable-next-line no-unused-vars
 function setupSettingsPage() {
-  // Only attach listeners once
-  if (!settingsLoaded) {
-    const saveTogglesBtn = document.getElementById("save-toggles-btn");
-    const saveSettingsBtn = document.getElementById("save-settings-btn");
-
-    if (saveTogglesBtn) {
-      saveTogglesBtn.addEventListener("click", handleSaveToggles);
-    }
-
-    if (saveSettingsBtn) {
-      saveSettingsBtn.addEventListener("click", handleSaveSettings);
-    }
-
-    settingsLoaded = true;
-  }
-
   // Always reload settings when entering the page
   loadSettings();
   loadToggles();
+
+  // Only mark as loaded once
+  if (!settingsLoaded) {
+    settingsLoaded = true;
+  }
+
+  // Always re-attach event listeners
+  attachSettingsEventListeners();
+}
+
+function attachSettingsEventListeners() {
+  const saveTogglesBtn = document.getElementById("save-toggles-btn");
+  const saveSettingsBtn = document.getElementById("save-settings-btn");
+
+  if (saveTogglesBtn) {
+    const newBtn = saveTogglesBtn.cloneNode(true);
+    saveTogglesBtn.parentNode.replaceChild(newBtn, saveTogglesBtn);
+    newBtn.addEventListener("click", handleSaveToggles);
+  }
+
+  if (saveSettingsBtn) {
+    const newBtn = saveSettingsBtn.cloneNode(true);
+    saveSettingsBtn.parentNode.replaceChild(newBtn, saveSettingsBtn);
+    newBtn.addEventListener("click", handleSaveSettings);
+  }
 }
 
 async function loadSettings() {

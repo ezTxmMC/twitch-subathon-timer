@@ -89,7 +89,8 @@ async function initializePage(pageName) {
       if (typeof setupOverlayPage === "function") setupFn = setupOverlayPage;
       break;
     case "dashboard":
-      // Dashboard doesn't need setup yet
+      if (typeof setupDashboardPage === "function")
+        setupFn = setupDashboardPage;
       break;
   }
 

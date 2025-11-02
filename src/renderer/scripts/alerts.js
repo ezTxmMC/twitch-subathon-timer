@@ -4,39 +4,54 @@ let alertsLoaded = false;
 
 // eslint-disable-next-line no-unused-vars
 function setupAlertsPage() {
-  // Only attach listeners once
+  // Always load current alert when entering the page
+  loadAlert(currentAlertType);
+
+  // Only mark as loaded once
   if (!alertsLoaded) {
-    const alertTypeBtns = document.querySelectorAll(".alert-type-btn");
-    const testAlertBtn = document.getElementById("test-alert-btn");
-    const saveAlertBtn = document.getElementById("save-alert-btn");
-    const resetAlertBtn = document.getElementById("reset-alert-btn");
-
-    alertTypeBtns.forEach((btn) => {
-      btn.addEventListener("click", () => {
-        alertTypeBtns.forEach((b) => b.classList.remove("active"));
-        btn.classList.add("active");
-        currentAlertType = btn.dataset.type;
-        loadAlert(currentAlertType);
-      });
-    });
-
-    if (testAlertBtn) {
-      testAlertBtn.addEventListener("click", handleTestAlert);
-    }
-
-    if (saveAlertBtn) {
-      saveAlertBtn.addEventListener("click", handleSaveAlert);
-    }
-
-    if (resetAlertBtn) {
-      resetAlertBtn.addEventListener("click", handleResetAlert);
-    }
-
     alertsLoaded = true;
   }
 
-  // Always load current alert when entering the page
-  loadAlert(currentAlertType);
+  // Always re-attach event listeners
+  attachAlertsEventListeners();
+}
+
+function attachAlertsEventListeners() {
+  const alertTypeBtns = document.querySelectorAll(".alert-type-btn");
+  const testAlertBtn = document.getElementById("test-alert-btn");
+  const saveAlertBtn = document.getElementById("save-alert-btn");
+  const resetAlertBtn = document.getElementById("reset-alert-btn");
+
+  alertTypeBtns.forEach((btn) => {
+    const newBtn = btn.cloneNode(true);
+    btn.parentNode.replaceChild(newBtn, btn);
+    newBtn.addEventListener("click", () => {
+      document
+        .querySelectorAll(".alert-type-btn")
+        .forEach((b) => b.classList.remove("active"));
+      newBtn.classList.add("active");
+      currentAlertType = newBtn.dataset.type;
+      loadAlert(currentAlertType);
+    });
+  });
+
+  if (testAlertBtn) {
+    const newBtn = testAlertBtn.cloneNode(true);
+    testAlertBtn.parentNode.replaceChild(newBtn, testAlertBtn);
+    newBtn.addEventListener("click", handleTestAlert);
+  }
+
+  if (saveAlertBtn) {
+    const newBtn = saveAlertBtn.cloneNode(true);
+    saveAlertBtn.parentNode.replaceChild(newBtn, saveAlertBtn);
+    newBtn.addEventListener("click", handleSaveAlert);
+  }
+
+  if (resetAlertBtn) {
+    const newBtn = resetAlertBtn.cloneNode(true);
+    resetAlertBtn.parentNode.replaceChild(newBtn, resetAlertBtn);
+    newBtn.addEventListener("click", handleResetAlert);
+  }
 }
 
 async function loadAlert(type) {

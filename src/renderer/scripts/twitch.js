@@ -5,28 +5,37 @@ let twitchLoaded = false;
 
 // eslint-disable-next-line no-unused-vars
 function setupTwitchPage() {
-  // Only attach event listeners once
-  if (!twitchLoaded) {
-    const loginBtn = document.getElementById("twitch-login-btn");
-    const logoutBtn = document.getElementById("twitch-logout-btn");
-
-    if (loginBtn) {
-      loginBtn.addEventListener("click", handleTwitchLogin);
-    }
-
-    if (logoutBtn) {
-      logoutBtn.addEventListener("click", handleTwitchLogout);
-    }
-
-    twitchLoaded = true;
-  }
-
-  // Always update UI with current Twitch user state
+  // Always update UI with current Twitch user state first
   if (_twitchUser) {
     displayTwitchUser(_twitchUser);
   } else {
     // Load Twitch user from main process
     loadTwitchUser();
+  }
+
+  // Only mark as loaded once
+  if (!twitchLoaded) {
+    twitchLoaded = true;
+  }
+
+  // Always re-attach event listeners
+  attachTwitchEventListeners();
+}
+
+function attachTwitchEventListeners() {
+  const loginBtn = document.getElementById("twitch-login-btn");
+  const logoutBtn = document.getElementById("twitch-logout-btn");
+
+  if (loginBtn) {
+    const newBtn = loginBtn.cloneNode(true);
+    loginBtn.parentNode.replaceChild(newBtn, loginBtn);
+    newBtn.addEventListener("click", handleTwitchLogin);
+  }
+
+  if (logoutBtn) {
+    const newBtn = logoutBtn.cloneNode(true);
+    logoutBtn.parentNode.replaceChild(newBtn, logoutBtn);
+    newBtn.addEventListener("click", handleTwitchLogout);
   }
 }
 
