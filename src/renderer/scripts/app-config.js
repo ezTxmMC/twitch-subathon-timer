@@ -1,16 +1,25 @@
-// App config page setup and handlers
+let appConfigLoaded = false;
+
+// App Config page setup and handlers
+// eslint-disable-next-line no-unused-vars
 function setupAppConfigPage() {
-  const saveBtn = document.getElementById("save-app-config-btn");
-  const resetBtn = document.getElementById("reset-app-config-btn");
+  // Only attach listeners once
+  if (!appConfigLoaded) {
+    const saveBtn = document.getElementById("save-app-config-btn");
+    const resetBtn = document.getElementById("reset-app-config-btn");
 
-  if (saveBtn) {
-    saveBtn.addEventListener("click", handleSaveAppConfig);
+    if (saveBtn) {
+      saveBtn.addEventListener("click", handleSaveAppConfig);
+    }
+
+    if (resetBtn) {
+      resetBtn.addEventListener("click", handleResetAppConfig);
+    }
+
+    appConfigLoaded = true;
   }
 
-  if (resetBtn) {
-    resetBtn.addEventListener("click", handleResetAppConfig);
-  }
-
+  // Always reload config when entering the page
   loadAppConfig();
 }
 
@@ -22,35 +31,49 @@ async function loadAppConfig() {
       api.setBaseURL(config.server.url);
     }
 
-    document.getElementById("config-server-url").value = config.server.url;
-    document.getElementById("config-server-port").value = config.server.port;
-    document.getElementById("config-server-auto-start").checked =
-      config.server.autoStart;
+    // Add null checks for all elements
+    const serverUrl = document.getElementById("config-server-url");
+    const serverPort = document.getElementById("config-server-port");
+    const serverAutoStart = document.getElementById("config-server-auto-start");
+    const twitchClientId = document.getElementById("config-twitch-client-id");
+    const twitchRedirectUri = document.getElementById(
+      "config-twitch-redirect-uri"
+    );
+    const appTheme = document.getElementById("config-app-theme");
+    const appLanguage = document.getElementById("config-app-language");
+    const appStartMinimized = document.getElementById(
+      "config-app-start-minimized"
+    );
+    const appCloseToTray = document.getElementById("config-app-close-to-tray");
+    const overlayTheme = document.getElementById("config-overlay-theme");
+    const overlayPosition = document.getElementById("config-overlay-position");
+    const overlayFontSize = document.getElementById("config-overlay-font-size");
+    const overlayShowAlerts = document.getElementById(
+      "config-overlay-show-alerts"
+    );
+    const overlayShowWheel = document.getElementById(
+      "config-overlay-show-wheel"
+    );
 
-    document.getElementById("config-twitch-client-id").value =
-      config.twitch.clientId;
-    document.getElementById("config-twitch-redirect-uri").value =
-      config.twitch.redirectUri;
-
-    document.getElementById("config-app-theme").value = config.app.theme;
-    document.getElementById("config-app-language").value = config.app.language;
-    document.getElementById("config-app-start-minimized").checked =
-      config.app.startMinimized;
-    document.getElementById("config-app-close-to-tray").checked =
-      config.app.closeToTray;
-
-    document.getElementById("config-overlay-theme").value =
-      config.overlay.defaultTheme;
-    document.getElementById("config-overlay-position").value =
-      config.overlay.defaultPosition;
-    document.getElementById("config-overlay-font-size").value =
-      config.overlay.defaultFontSize;
-    document.getElementById("config-overlay-show-alerts").checked =
-      config.overlay.showAlerts;
-    document.getElementById("config-overlay-show-wheel").checked =
-      config.overlay.showWheel;
+    if (serverUrl) serverUrl.value = config.server.url;
+    if (serverPort) serverPort.value = config.server.port;
+    if (serverAutoStart) serverAutoStart.checked = config.server.autoStart;
+    if (twitchClientId) twitchClientId.value = config.twitch.clientId;
+    if (twitchRedirectUri) twitchRedirectUri.value = config.twitch.redirectUri;
+    if (appTheme) appTheme.value = config.app.theme;
+    if (appLanguage) appLanguage.value = config.app.language;
+    if (appStartMinimized)
+      appStartMinimized.checked = config.app.startMinimized;
+    if (appCloseToTray) appCloseToTray.checked = config.app.closeToTray;
+    if (overlayTheme) overlayTheme.value = config.overlay.defaultTheme;
+    if (overlayPosition) overlayPosition.value = config.overlay.defaultPosition;
+    if (overlayFontSize) overlayFontSize.value = config.overlay.defaultFontSize;
+    if (overlayShowAlerts)
+      overlayShowAlerts.checked = config.overlay.showAlerts;
+    if (overlayShowWheel) overlayShowWheel.checked = config.overlay.showWheel;
   } catch (error) {
-    console.error("Failed to load config");
+    console.error("Failed to load config", error);
+    void error;
   }
 }
 
@@ -130,6 +153,7 @@ async function handleSaveAppConfig() {
     }
   } catch (error) {
     showNotification("Fehler", "Speichern fehlgeschlagen", "error");
+    void error;
   }
 }
 
@@ -151,5 +175,6 @@ async function handleResetAppConfig() {
     );
   } catch (error) {
     showNotification("Fehler", "Reset fehlgeschlagen", "error");
+    void error;
   }
 }

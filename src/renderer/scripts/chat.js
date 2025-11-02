@@ -5,28 +5,36 @@ let chatStats = {
   activeUsers: new Set(),
   messagesPerMin: 0,
 };
+let chatLoaded = false;
 
+// eslint-disable-next-line no-unused-vars
 function setupChatPage() {
-  const sendBtn = document.getElementById("send-message-btn");
-  const messageInput = document.getElementById("chat-message-input");
-  const clearBtn = document.getElementById("clear-chat-btn");
+  // Only attach listeners once
+  if (!chatLoaded) {
+    const sendBtn = document.getElementById("send-message-btn");
+    const messageInput = document.getElementById("chat-message-input");
+    const clearBtn = document.getElementById("clear-chat-btn");
 
-  if (sendBtn) {
-    sendBtn.addEventListener("click", handleSendMessage);
+    if (sendBtn) {
+      sendBtn.addEventListener("click", handleSendMessage);
+    }
+
+    if (messageInput) {
+      messageInput.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") handleSendMessage();
+      });
+    }
+
+    if (clearBtn) {
+      clearBtn.addEventListener("click", handleClearChat);
+    }
+
+    setupChatListener();
+    chatLoaded = true;
   }
 
-  if (messageInput) {
-    messageInput.addEventListener("keypress", (e) => {
-      if (e.key === "Enter") handleSendMessage();
-    });
-  }
-
-  if (clearBtn) {
-    clearBtn.addEventListener("click", handleClearChat);
-  }
-
+  // Always reload chat channels when entering the page
   loadChatChannels();
-  setupChatListener();
 }
 
 async function loadChatChannels() {
@@ -111,6 +119,20 @@ function addChatMessage(message) {
   }
 
   updateChatStats();
+
+  // Broadcast chat message to overlay
+  electronAPI.server
+    .broadcast({
+      type: "chat-message",
+      username: message.username,
+      message: message.message,
+      color: message.color || "#ffffff",
+      isMod: message.isMod || false,
+      isSubscriber: message.isSubscriber || false,
+      isVip: message.isVip || false,
+      timestamp: Date.now(),
+    })
+    .catch((err) => console.error("Failed to broadcast chat message:", err));
 }
 
 async function handleSendMessage() {

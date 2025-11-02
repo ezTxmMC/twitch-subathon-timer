@@ -1,18 +1,38 @@
+let eventsLoaded = false;
+
 // Events page setup and handlers
+// eslint-disable-next-line no-unused-vars
 function setupEventsPage() {
-  const refreshBtn = document.getElementById("refresh-events-btn");
-  const clearBtn = document.getElementById("clear-events-btn");
+  // Only set up listeners and polling once
+  if (!eventsLoaded) {
+    const refreshBtn = document.getElementById("refresh-events-btn");
+    const clearBtn = document.getElementById("clear-events-btn");
 
-  if (refreshBtn) {
-    refreshBtn.addEventListener("click", loadEvents);
+    if (refreshBtn) {
+      refreshBtn.addEventListener("click", loadEvents);
+    }
+
+    if (clearBtn) {
+      clearBtn.addEventListener("click", handleClearEvents);
+    }
+
+    startEventPolling();
+    setupTwitchEventListener();
+    eventsLoaded = true;
   }
 
-  if (clearBtn) {
-    clearBtn.addEventListener("click", handleClearEvents);
-  }
-
+  // Always load events when entering the page
   loadEvents();
-  startEventPolling();
+}
+
+function setupTwitchEventListener() {
+  electronAPI.on("twitch-event", (event) => {
+    console.log("[Events] Received Twitch event:", event);
+    // Reload events table to show new event
+    if (_currentPage === "events") {
+      loadEvents();
+    }
+  });
 }
 
 let eventPollingInterval = null;
@@ -22,15 +42,18 @@ function startEventPolling() {
     clearInterval(eventPollingInterval);
   }
   eventPollingInterval = setInterval(() => {
-    if (__currentPage === "events") {
+    if (_currentPage === "events") {
       loadEvents();
     }
   }, 5000);
 }
 
 async function loadEvents() {
+  const tbody = document.getElementById("events-table-body");
+  if (!tbody) return;
+
   if (!_currentSession) {
-    document.getElementById("events-table-body").innerHTML = `
+    tbody.innerHTML = `
       <tr><td colspan="7" class="text-center text-muted">Keine aktive Session</td></tr>
     `;
     return;

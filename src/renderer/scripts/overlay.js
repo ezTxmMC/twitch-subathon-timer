@@ -1,6 +1,9 @@
+let overlayLoaded = false;
+
 // Overlay page setup and handlers
 // Relies on global _appConfig defined in app.js
 
+// eslint-disable-next-line no-unused-vars
 async function setupOverlayPage() {
   const baseUrl = await getOverlayBaseUrl();
   const overlays = [
@@ -10,30 +13,39 @@ async function setupOverlayPage() {
     { key: "chat", path: "chat" },
   ];
 
+  // Only attach event handlers once
+  if (!overlayLoaded) {
+    overlays.forEach(({ key, path }) => {
+      const copyBtn = document.getElementById(`copy-${key}-url-btn`);
+      const previewBtn = document.getElementById(`preview-${key}-btn`);
+      const url = `${baseUrl}/overlay/${path}`;
+
+      if (copyBtn) {
+        copyBtn.onclick = () => handleOverlayCopy(url);
+      }
+
+      if (previewBtn) {
+        previewBtn.onclick = () => handleOverlayPreview(url);
+      }
+    });
+    overlayLoaded = true;
+  }
+
+  // Always update overlay URLs when entering the page
   overlays.forEach(({ key, path }) => {
     const input = document.getElementById(`${key}-overlay-url`);
-    const copyBtn = document.getElementById(`copy-${key}-url-btn`);
-    const previewBtn = document.getElementById(`preview-${key}-btn`);
     const url = `${baseUrl}/overlay/${path}`;
 
     if (input) {
       input.value = url;
-    }
-
-    if (copyBtn) {
-      copyBtn.onclick = () => handleOverlayCopy(url);
-    }
-
-    if (previewBtn) {
-      previewBtn.onclick = () => handleOverlayPreview(url);
     }
   });
 }
 
 async function getOverlayBaseUrl() {
   const fallback = "http://localhost:8080";
-  if (appConfig?.server?.url) {
-    return normalizeBaseUrl(appConfig.server.url);
+  if (_appConfig?.server?.url) {
+    return normalizeBaseUrl(_appConfig.server.url);
   }
 
   try {

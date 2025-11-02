@@ -1,11 +1,24 @@
+let channelsLoaded = false;
+
 // Channels page setup and handlers
+// eslint-disable-next-line no-unused-vars
 function setupChannelsPage() {
+  if (channelsLoaded) {
+    // Just reload channels if already initialized
+    loadChannels();
+    return;
+  }
+
   loadChannels();
+  channelsLoaded = true;
 }
 
 async function loadChannels() {
+  const tbody = document.getElementById("channels-table-body");
+  if (!tbody) return;
+
   if (!_currentSession) {
-    document.getElementById("channels-table-body").innerHTML = `
+    tbody.innerHTML = `
       <tr><td colspan="5" class="text-center text-muted">Keine aktive Session</td></tr>
     `;
     return;
@@ -61,16 +74,36 @@ function displayChannels(channels) {
     .join("");
 }
 
+// eslint-disable-next-line no-unused-vars
 async function handleRemoveChannel(channelId) {
   if (!_currentSession) return;
 
   if (!confirm("Channel wirklich entfernen?")) return;
 
   try {
+    // Get channel info before removing to know which chat to leave
+    const channels = await api.getChannels(_currentSession.sessionId);
+    const channel = channels.find((c) => c.id === channelId);
+
+    // Remove channel from session
     await api.removeChannel(_currentSession.sessionId, channelId);
+
+    // Leave the Twitch chat channel if channel was found
+    if (channel?.channelName) {
+      try {
+        await electronAPI.chat.leaveChannel(channel.channelName);
+        console.log(`[Channels] Left Twitch chat: ${channel.channelName}`);
+      } catch (chatError) {
+        console.error("[Channels] Failed to leave chat:", chatError);
+        // Continue anyway since channel was removed from session
+      }
+    }
+
+    // Reload the channels list
     await loadChannels();
     showNotification("Channel entfernt", "Channel wurde entfernt", "info");
   } catch (error) {
+    console.error("[Channels] Failed to remove channel:", error);
     showNotification("Fehler", "Channel konnte nicht entfernt werden", "error");
     void error;
   }

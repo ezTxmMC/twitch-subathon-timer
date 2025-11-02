@@ -1,16 +1,25 @@
+let settingsLoaded = false;
+
 // Settings page setup and handlers
+// eslint-disable-next-line no-unused-vars
 function setupSettingsPage() {
-  const saveTogglesBtn = document.getElementById("save-toggles-btn");
-  const saveSettingsBtn = document.getElementById("save-settings-btn");
+  // Only attach listeners once
+  if (!settingsLoaded) {
+    const saveTogglesBtn = document.getElementById("save-toggles-btn");
+    const saveSettingsBtn = document.getElementById("save-settings-btn");
 
-  if (saveTogglesBtn) {
-    saveTogglesBtn.addEventListener("click", handleSaveToggles);
+    if (saveTogglesBtn) {
+      saveTogglesBtn.addEventListener("click", handleSaveToggles);
+    }
+
+    if (saveSettingsBtn) {
+      saveSettingsBtn.addEventListener("click", handleSaveSettings);
+    }
+
+    settingsLoaded = true;
   }
 
-  if (saveSettingsBtn) {
-    saveSettingsBtn.addEventListener("click", handleSaveSettings);
-  }
-
+  // Always reload settings when entering the page
   loadSettings();
   loadToggles();
 }

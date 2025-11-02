@@ -1,33 +1,41 @@
 // Alerts page setup and handlers
 let currentAlertType = "follow";
+let alertsLoaded = false;
 
+// eslint-disable-next-line no-unused-vars
 function setupAlertsPage() {
-  const alertTypeBtns = document.querySelectorAll(".alert-type-btn");
-  const testAlertBtn = document.getElementById("test-alert-btn");
-  const saveAlertBtn = document.getElementById("save-alert-btn");
-  const resetAlertBtn = document.getElementById("reset-alert-btn");
+  // Only attach listeners once
+  if (!alertsLoaded) {
+    const alertTypeBtns = document.querySelectorAll(".alert-type-btn");
+    const testAlertBtn = document.getElementById("test-alert-btn");
+    const saveAlertBtn = document.getElementById("save-alert-btn");
+    const resetAlertBtn = document.getElementById("reset-alert-btn");
 
-  alertTypeBtns.forEach((btn) => {
-    btn.addEventListener("click", () => {
-      alertTypeBtns.forEach((b) => b.classList.remove("active"));
-      btn.classList.add("active");
-      currentAlertType = btn.dataset.type;
-      loadAlert(currentAlertType);
+    alertTypeBtns.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        alertTypeBtns.forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+        currentAlertType = btn.dataset.type;
+        loadAlert(currentAlertType);
+      });
     });
-  });
 
-  if (testAlertBtn) {
-    testAlertBtn.addEventListener("click", handleTestAlert);
+    if (testAlertBtn) {
+      testAlertBtn.addEventListener("click", handleTestAlert);
+    }
+
+    if (saveAlertBtn) {
+      saveAlertBtn.addEventListener("click", handleSaveAlert);
+    }
+
+    if (resetAlertBtn) {
+      resetAlertBtn.addEventListener("click", handleResetAlert);
+    }
+
+    alertsLoaded = true;
   }
 
-  if (saveAlertBtn) {
-    saveAlertBtn.addEventListener("click", handleSaveAlert);
-  }
-
-  if (resetAlertBtn) {
-    resetAlertBtn.addEventListener("click", handleResetAlert);
-  }
-
+  // Always load current alert when entering the page
   loadAlert(currentAlertType);
 }
 
@@ -77,12 +85,20 @@ async function loadAlert(type) {
 
   const alert = defaultAlerts[type];
 
-  document.getElementById("alert-name").value = alert.name;
-  document.getElementById("alert-duration").value = alert.duration;
-  document.getElementById("alert-sound").value = alert.sound;
-  document.getElementById("alert-html").value = alert.html;
-  document.getElementById("alert-css").value = alert.css;
-  document.getElementById("alert-js").value = alert.js;
+  // Add null checks for all elements
+  const nameEl = document.getElementById("alert-name");
+  const durationEl = document.getElementById("alert-duration");
+  const soundEl = document.getElementById("alert-sound");
+  const htmlEl = document.getElementById("alert-html");
+  const cssEl = document.getElementById("alert-css");
+  const jsEl = document.getElementById("alert-js");
+
+  if (nameEl) nameEl.value = alert.name;
+  if (durationEl) durationEl.value = alert.duration;
+  if (soundEl) soundEl.value = alert.sound;
+  if (htmlEl) htmlEl.value = alert.html;
+  if (cssEl) cssEl.value = alert.css;
+  if (jsEl) jsEl.value = alert.js;
 }
 
 function handleTestAlert() {
@@ -107,6 +123,18 @@ function handleTestAlert() {
     <style>${css}</style>
     ${processedHtml}
   `;
+
+  // Broadcast test alert to overlays
+  const alertData = {
+    type: "event-alert",
+    eventType: currentAlertType.toUpperCase(),
+    ...testData[currentAlertType],
+    timestamp: Date.now(),
+  };
+
+  electronAPI.server.broadcast(alertData).catch((error) => {
+    console.error("Failed to broadcast alert:", error);
+  });
 
   setTimeout(() => {
     preview.innerHTML =

@@ -1,4 +1,9 @@
+console.log("[API] Script loading...");
+console.log("[API] window object:", typeof window);
+console.log("[API] globalThis object:", typeof globalThis);
+
 (function attachAPI(globalObj) {
+  console.log("[API] IIFE executing, globalObj:", globalObj);
   class API {
     constructor() {
       this.baseURL = "http://gp01.kernex.host:5020/api";
@@ -20,6 +25,10 @@
 
     async request(endpoint, options = {}) {
       try {
+        console.log(
+          `[API] Making request to: ${this.baseURL}${endpoint}`,
+          options
+        );
         const response = await fetch(`${this.baseURL}${endpoint}`, {
           headers: {
             "Content-Type": "application/json",
@@ -28,11 +37,14 @@
           ...options,
         });
 
+        console.log(`[API] Response status:`, response.status);
         if (!response.ok) {
           throw new Error(`HTTP ${response.status}`);
         }
 
-        return await response.json();
+        const data = await response.json();
+        console.log(`[API] Response data:`, data);
+        return data;
       } catch (error) {
         console.error(`[API] Error: ${endpoint}`, error);
         throw error;
@@ -40,6 +52,7 @@
     }
 
     async createSession(name, initialSeconds) {
+      console.log("[API] createSession called with:", { name, initialSeconds });
       return this.request("/session/create", {
         method: "POST",
         body: JSON.stringify({ name, initialSeconds }),
@@ -127,6 +140,7 @@
   }
 
   const apiInstance = new API();
+  console.log("[API] API instance created with baseURL:", apiInstance.baseURL);
 
   if (typeof module !== "undefined" && module.exports) {
     module.exports = {
@@ -138,5 +152,6 @@
   if (globalObj) {
     globalObj.API = API;
     globalObj.api = apiInstance;
+    console.log("[API] API attached to global object");
   }
 })(typeof window !== "undefined" ? window : globalThis);
