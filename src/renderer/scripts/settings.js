@@ -115,6 +115,3 @@ async function handleSaveToggles() {
     void error;
   }
 }
-
-// Initialize settings page when DOM is loaded
-document.addEventListener("DOMContentLoaded", setupSettingsPage);

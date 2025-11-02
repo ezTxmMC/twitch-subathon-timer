@@ -152,5 +152,3 @@ function escapeHtml(text) {
   div.textContent = text;
   return div.innerHTML;
 }
-
-document.addEventListener("DOMContentLoaded", setupChatPage);

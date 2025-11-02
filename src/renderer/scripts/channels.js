@@ -75,5 +75,3 @@ async function handleRemoveChannel(channelId) {
     void error;
   }
 }
-
-document.addEventListener("DOMContentLoaded", setupChannelsPage);

@@ -168,8 +168,6 @@ electronAPI.on("timer-update", (timerData) => {
   updateTimerDisplay();
 });
 
-// Initialize timer page when DOM is loaded
-document.addEventListener("DOMContentLoaded", setupTimerPage);
 // Quick action button handlers and setup
 function setupQuickActions() {
   const quickActionsContainer = document.querySelector(".quick-actions");

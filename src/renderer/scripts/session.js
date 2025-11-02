@@ -125,6 +125,3 @@ function displaySession(session) {
     session.createdAt
   );
 }
-
-// Initialize session page when DOM is ready
-document.addEventListener("DOMContentLoaded", setupSessionPage);

@@ -92,5 +92,3 @@ function handleOverlayPreview(url) {
     showNotification("Fehler", "Preview konnte nicht geöffnet werden", "error");
   }
 }
-
-document.addEventListener("DOMContentLoaded", setupOverlayPage);

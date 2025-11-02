@@ -97,5 +97,3 @@ async function autoAddChannelToSession() {
     void error;
   }
 }
-
-document.addEventListener("DOMContentLoaded", setupTwitchPage);

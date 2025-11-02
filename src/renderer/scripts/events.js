@@ -92,5 +92,3 @@ async function handleClearEvents() {
     "info"
   );
 }
-
-document.addEventListener("DOMContentLoaded", setupEventsPage);
