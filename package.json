@@ -3,21 +3,89 @@
   "version": "1.0.0",
   "description": "Subathon Timer Desktop App",
   "main": "src/main/index.js",
-  "author": "SyntaxJason",
+  "author": "ezTxmMC & SyntaxJason",
   "license": "MIT",
   "scripts": {
     "start": "electron .",
-    "dev": "electron . --dev"
+    "dev": "electron . --dev",
+    "build:css": "tailwindcss -i ./src/renderer/styles/main.css -o ./src/renderer/styles/output.css --watch",
+    "build:css:prod": "tailwindcss -i ./src/renderer/styles/main.css -o ./src/renderer/styles/output.css --minify",
+    "build:icons": "node build/generate-icons.js",
+    "build:win": "pnpm run build:css:prod && electron-builder --win",
+    "build:mac": "pnpm run build:css:prod && electron-builder --mac",
+    "build:all": "pnpm run build:css:prod && electron-builder --win --mac"
   },
   "dependencies": {
-    "tmi.js": "^1.8.5",
-    "electron": "^28.0.0",
+    "dotenv": "^16.3.1",
+    "electron-fetch": "^1.9.1",
+    "encoding": "^0.1.13",
     "express": "^4.18.2",
-    "ws": "^8.14.2",
-    "node-fetch": "^2.7.0",
-    "dotenv": "^16.3.1"
+    "tmi.js": "^1.8.5",
+    "ws": "^8.14.2"
   },
   "devDependencies": {
-    "electron-builder": "^24.9.1"
+    "@tailwindcss/cli": "^4.1.16",
+    "autoprefixer": "^10.4.21",
+    "electron": "^28.0.0",
+    "electron-builder": "^24.9.1",
+    "electron-icon-builder": "^2.0.1",
+    "node-gyp": "^10.1.0",
+    "tailwindcss": "^4.1.16"
+  },
+  "build": {
+    "appId": "de.eztxm.subathon-timer",
+    "productName": "Subathon Timer",
+    "asar": true,
+    "npmRebuild": true,
+    "nodeGypRebuild": false,
+    "buildDependenciesFromSource": false,
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "src/**/*",
+      "package.json",
+      "node_modules/**/*",
+      "node_modules/.pnpm/**/*",
+      "!node_modules/*/{CHANGELOG.md,README.md,README,readme.md,readme}",
+      "!node_modules/*/{test,__tests__,tests,powered-test,example,examples}",
+      "!node_modules/*.d.ts",
+      "!node_modules/.bin",
+      "!node_modules/**/build/Release",
+      "!**/*.{iml,o,hprof,orig,pyc,pyo,rbc,swp,csproj,sln,xproj}",
+      "!.editorconfig",
+      "!**/._*",
+      "!**/{.DS_Store,.git,.hg,.svn,CVS,RCS,SCCS,.gitignore,.gitattributes}",
+      "!**/{__pycache__,thumbs.db,.flowconfig,.idea,.vs,.nyc_output}",
+      "!**/{appveyor.yml,.travis.yml,circle.yml}",
+      "!**/{npm-debug.log,yarn.lock,.yarn-integrity,.yarn-metadata.json}"
+    ],
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "mac": {
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "arm64"
+          ]
+        }
+      ],
+      "category": "public.app-category.utilities"
+    }
   }
 }

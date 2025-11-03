@@ -4,12 +4,39 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Subathon Timer</title>
-    <link rel="stylesheet" href="styles.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: {
+                DEFAULT: "#9147ff",
+                dark: "#772ce8",
+              },
+            },
+          },
+        },
+      };
+    </script>
   </head>
-  <body>
-    <div class="timer-container">
-      <div class="timer-display" id="timer">00:00:00</div>
-      <div class="timer-label">Zeit verbleibend</div>
+  <body class="bg-transparent m-0 p-0 overflow-hidden">
+    <div class="flex flex-col items-center justify-center min-h-screen p-8">
+      <div
+        class="bg-gradient-to-br from-primary-dark to-primary rounded-3xl shadow-2xl px-8 py-4 text-center"
+      >
+        <div
+          class="text-7xl font-bold text-white mb-4 font-sans tracking-wider"
+          id="timer"
+        >
+          00:00:00
+        </div>
+        <div
+          class="text-xl text-white/90 font-semibold uppercase tracking-widest"
+        >
+          Zeit verbleibend
+        </div>
+      </div>
     </div>
     <script src="script.js"></script>
   </body>

@@ -1,39 +1,29 @@
-let overlayLoaded = false;
-
 // Overlay page setup and handlers
 // Relies on global _appConfig defined in app.js
 
 // eslint-disable-next-line no-unused-vars
 async function setupOverlayPage() {
-  const baseUrl = await getOverlayBaseUrl();
-  const overlays = [
-    { key: "timer", path: "timer" },
-    { key: "alerts", path: "alerts" },
-    { key: "wheel", path: "wheel" },
-    { key: "chat", path: "chat" },
-  ];
+  const overlayBaseUrl = await getOverlayBaseUrl();
+  const overlays = [{ key: "timer", path: "timer" }];
 
-  // Only attach event handlers once
-  if (!overlayLoaded) {
-    overlays.forEach(({ key, path }) => {
-      const copyBtn = document.getElementById(`copy-${key}-url-btn`);
-      const previewBtn = document.getElementById(`preview-${key}-btn`);
-      const url = `${baseUrl}/overlay/${path}`;
+  // Attach event handlers
+  overlays.forEach(({ key, path }) => {
+    const copyBtn = document.getElementById(`copy-${key}-url-btn`);
+    const previewBtn = document.getElementById(`preview-${key}-btn`);
+    const url = `${overlayBaseUrl}/overlay/${path}`;
 
-      if (copyBtn) {
-        copyBtn.onclick = () => handleOverlayCopy(url);
-      }
+    if (copyBtn) {
+      copyBtn.onclick = () => handleOverlayCopy(url);
+    }
 
-      if (previewBtn) {
-        previewBtn.onclick = () => handleOverlayPreview(url);
-      }
-    });
-    overlayLoaded = true;
-  }
+    if (previewBtn) {
+      previewBtn.onclick = () => handleOverlayPreview(url);
+    }
+  });
 
   // Always update overlay URLs when entering the page
   overlays.forEach(({ key, path }) => {
-    const input = document.getElementById(`${key}-overlay-url`);
+    const input = overlayBaseUrl.getElementById(`${key}-overlay-url`);
     const url = `${baseUrl}/overlay/${path}`;
 
     if (input) {
@@ -44,23 +34,6 @@ async function setupOverlayPage() {
 
 async function getOverlayBaseUrl() {
   const fallback = "http://localhost:8080";
-  if (_appConfig?.server?.url) {
-    return normalizeBaseUrl(_appConfig.server.url);
-  }
-
-  try {
-    const config = await electronAPI.config.getAll();
-    if (config?.server?.url) {
-      _appConfig = config;
-      return normalizeBaseUrl(config.server.url);
-    }
-  } catch (error) {
-    console.error("[Overlay] Failed to load config", error);
-  }
-
-  console.warn(
-    "[Overlay] Missing _appConfig, falling back to default overlay base URL"
-  );
   return fallback;
 }
 

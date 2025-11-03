@@ -1,18 +1,24 @@
 const crypto = require("crypto");
 const http = require("http");
 const { shell } = require("electron");
-const fetch = require("node-fetch");
-const EventSubClient = require("./eventsub");
-const TwitchChatClient = require("./chat");
+const fetch = require("electron-fetch").default;
+const fs = require("fs");
+const path = require("path");
+const os = require("os");
 
 class TwitchAuth {
   constructor(configManager) {
     this.config = configManager;
     this.currentUser = null;
-    this.eventSubClient = null;
-    this.chatClient = null;
     this.callbackServer = null;
     this.authState = null;
+    this.authDir = path.join(os.homedir(), "AppData", "Local", "subathon");
+    this.authPath = path.join(this.authDir, "auth.json");
+
+    // Ensure auth directory exists
+    if (!fs.existsSync(this.authDir)) {
+      fs.mkdirSync(this.authDir, { recursive: true });
+    }
   }
 
   async login() {
@@ -34,6 +40,74 @@ class TwitchAuth {
 
       this.startCallbackServer(resolve, reject);
     });
+  }
+
+  // Load persisted authentication
+  async loadPersistedAuth() {
+    try {
+      if (fs.existsSync(this.authPath)) {
+        const data = fs.readFileSync(this.authPath, "utf8");
+        const authData = JSON.parse(data);
+
+        // Validate token is still valid
+        const isValid = await this.validateToken(authData.accessToken);
+
+        if (isValid) {
+          this.currentUser = authData;
+          console.log("[Auth] Restored session for:", authData.displayName);
+          return authData;
+        } else {
+          console.log("[Auth] Token expired, deleting persisted auth");
+          this.deletePersistedAuth();
+          return null;
+        }
+      }
+    } catch (error) {
+      console.error("[Auth] Failed to load persisted auth:", error);
+      this.deletePersistedAuth();
+    }
+    return null;
+  }
+
+  // Save authentication to disk
+  savePersistedAuth(userData) {
+    try {
+      fs.writeFileSync(
+        this.authPath,
+        JSON.stringify(userData, null, 2),
+        "utf8"
+      );
+      console.log("[Auth] Authentication persisted");
+    } catch (error) {
+      console.error("[Auth] Failed to save auth:", error);
+    }
+  }
+
+  // Delete persisted authentication
+  deletePersistedAuth() {
+    try {
+      if (fs.existsSync(this.authPath)) {
+        fs.unlinkSync(this.authPath);
+        console.log("[Auth] Persisted auth deleted");
+      }
+    } catch (error) {
+      console.error("[Auth] Failed to delete persisted auth:", error);
+    }
+  }
+
+  // Validate if token is still valid
+  async validateToken(token) {
+    try {
+      const response = await fetch("https://id.twitch.tv/oauth2/validate", {
+        headers: {
+          Authorization: `OAuth ${token}`,
+        },
+      });
+      return response.ok;
+    } catch (error) {
+      console.error("[Auth] Token validation failed:", error);
+      return false;
+    }
   }
 
   startCallbackServer(resolve, reject) {
@@ -67,8 +141,8 @@ class TwitchAuth {
           accessToken: token,
         };
 
-        await this.connectEventSub(token, user.id);
-        await this.connectChat(user.login, token);
+        // Save authentication for persistence
+        this.savePersistedAuth(this.currentUser);
 
         res.writeHead(200, { "Content-Type": "text/html" });
         res.end(
@@ -145,56 +219,20 @@ class TwitchAuth {
     };
   }
 
-  async connectEventSub(token, userId) {
-    if (this.eventSubClient) {
-      this.eventSubClient.disconnect();
-    }
-
-    const clientId = this.config.get("twitch.clientId");
-    this.eventSubClient = new EventSubClient(token, userId, clientId);
-    await this.eventSubClient.connect();
-    console.log("[Auth] EventSub connected");
-  }
-
-  async connectChat(username, token) {
-    if (this.chatClient) {
-      this.chatClient.disconnect();
-    }
-
-    this.chatClient = new TwitchChatClient();
-    await this.chatClient.connect(username, token);
-    console.log("[Auth] Chat connected");
-  }
-
   async logout() {
-    if (this.eventSubClient) {
-      this.eventSubClient.disconnect();
-      this.eventSubClient = null;
-    }
-
-    if (this.chatClient) {
-      this.chatClient.disconnect();
-      this.chatClient = null;
-    }
-
     this.currentUser = null;
 
     if (this.callbackServer) {
       this.callbackServer.close();
       this.callbackServer = null;
     }
+
+    // Delete persisted authentication
+    this.deletePersistedAuth();
   }
 
   getCurrentUser() {
     return this.currentUser;
-  }
-
-  getEventSubClient() {
-    return this.eventSubClient;
-  }
-
-  getChatClient() {
-    return this.chatClient;
   }
 }
 

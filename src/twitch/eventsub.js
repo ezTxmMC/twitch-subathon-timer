@@ -1,5 +1,5 @@
 const WebSocket = require("ws");
-const fetch = require("node-fetch");
+const fetch = require("electron-fetch").default;
 
 class EventSubClient {
   constructor(accessToken, userId, clientId) {

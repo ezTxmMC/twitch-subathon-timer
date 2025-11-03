@@ -1,0 +1,91 @@
+@import "tailwindcss";
+
+/* Tailwind v4 Configuration */
+@theme {
+  /* Custom Colors */
+  --color-primary: #9147ff;
+  --color-primary-dark: #772ce8;
+  --color-primary-light: #a970ff;
+
+  --color-dark-100: #18181b;
+  --color-dark-200: #1f1f23;
+  --color-dark-300: #26262c;
+  --color-dark-400: #2d2d35;
+
+  --color-success: #00f593;
+  --color-warning: #ffb800;
+  --color-danger: #ff4444;
+  --color-info: #00bfff;
+
+  /* Custom Animation */
+  --animate-pulse-slow: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Custom Components */
+@layer components {
+  .btn-primary {
+    @apply bg-primary hover:bg-primary-dark text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-200;
+  }
+
+  .btn-secondary {
+    @apply bg-dark-300 hover:bg-dark-400 text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-200;
+  }
+
+  .input-field {
+    @apply w-full bg-dark-300 text-white border border-dark-400 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary;
+  }
+
+  .card {
+    @apply bg-dark-200 rounded-xl p-6 shadow-lg;
+  }
+
+  .nav-item {
+    @apply flex items-center gap-3 px-4 py-3 rounded-lg transition-colors duration-200 hover:bg-dark-300 cursor-pointer;
+  }
+
+  .nav-item.active {
+    @apply bg-primary text-white;
+  }
+}
+
+/* Base Styles */
+@layer base {
+  * {
+    @apply box-border;
+  }
+
+  body {
+    @apply bg-dark-100 text-white m-0 p-0 font-sans antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-bold;
+  }
+
+  h1 {
+    @apply text-3xl;
+  }
+
+  h2 {
+    @apply text-2xl;
+  }
+
+  h3 {
+    @apply text-xl;
+  }
+
+  button {
+    @apply cursor-pointer;
+  }
+
+  input,
+  select,
+  textarea {
+    font-family: inherit;
+  }
+}

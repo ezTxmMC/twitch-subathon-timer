@@ -43,6 +43,9 @@ function createWindow() {
 app.whenReady().then(async () => {
   createWindow();
 
+  // Try to restore persisted authentication
+  const persistedUser = await twitchAuth.loadPersistedAuth();
+
   // Start integrated server
   try {
     const config = configManager.getAll();
@@ -63,14 +66,8 @@ app.whenReady().then(async () => {
     if (mainWindow) {
       mainWindow.webContents.send("app-ready", {
         config: configManager.getAll(),
+        user: persistedUser, // Send persisted user if available
       });
-
-      const chatClient = twitchAuth.getChatClient();
-      if (chatClient) {
-        chatClient.onMessage((message) => {
-          mainWindow.webContents.send("chat-message", message);
-        });
-      }
     }
   }, 1000);
 });
@@ -107,65 +104,6 @@ ipcMain.handle("config:reset", () => {
 ipcMain.handle("twitch:login", async () => {
   try {
     const user = await twitchAuth.login();
-
-    // Setup chat message forwarding after login
-    const chatClient = twitchAuth.getChatClient();
-    if (chatClient && mainWindow) {
-      chatClient.onMessage((message) => {
-        mainWindow.webContents.send("chat-message", message);
-      });
-    }
-
-    // Setup EventSub event forwarding after login
-    const eventSubClient = twitchAuth.getEventSubClient();
-    if (eventSubClient && mainWindow) {
-      // Forward all Twitch events to renderer
-      eventSubClient.on("channel.follow", (event) => {
-        mainWindow.webContents.send("twitch-event", {
-          type: "FOLLOW",
-          data: event,
-        });
-      });
-
-      eventSubClient.on("channel.subscribe", (event) => {
-        mainWindow.webContents.send("twitch-event", {
-          type: "SUBSCRIPTION",
-          data: event,
-        });
-      });
-
-      eventSubClient.on("channel.subscription.gift", (event) => {
-        mainWindow.webContents.send("twitch-event", {
-          type: "GIFTED_SUB",
-          data: event,
-        });
-      });
-
-      eventSubClient.on("channel.cheer", (event) => {
-        mainWindow.webContents.send("twitch-event", {
-          type: "BITS",
-          data: event,
-        });
-      });
-
-      eventSubClient.on("channel.raid", (event) => {
-        mainWindow.webContents.send("twitch-event", {
-          type: "RAID",
-          data: event,
-        });
-      });
-
-      eventSubClient.on(
-        "channel.channel_points_custom_reward_redemption.add",
-        (event) => {
-          mainWindow.webContents.send("twitch-event", {
-            type: "REWARD_REDEMPTION",
-            data: event,
-          });
-        }
-      );
-    }
-
     return { success: true, user };
   } catch (error) {
     console.error("[Main] Twitch login error:", error);
@@ -204,57 +142,6 @@ ipcMain.handle("window:maximize", () => {
 
 ipcMain.handle("window:close", () => {
   if (mainWindow) mainWindow.close();
-});
-
-ipcMain.handle("chat:joinChannel", async (event, channelName) => {
-  try {
-    const chatClient = twitchAuth.getChatClient();
-    if (!chatClient) {
-      return { success: false, error: "Chat not connected" };
-    }
-
-    await chatClient.joinChannel(channelName);
-    return { success: true };
-  } catch (error) {
-    return { success: false, error: error.message };
-  }
-});
-
-ipcMain.handle("chat:leaveChannel", async (event, channelName) => {
-  try {
-    const chatClient = twitchAuth.getChatClient();
-    if (!chatClient) {
-      return { success: false };
-    }
-
-    await chatClient.leaveChannel(channelName);
-    return { success: true };
-  } catch (error) {
-    return { success: false, error: error.message };
-  }
-});
-
-ipcMain.handle("chat:sendMessage", async (event, channelName, message) => {
-  try {
-    const chatClient = twitchAuth.getChatClient();
-    if (!chatClient) {
-      return { success: false, error: "Chat not connected" };
-    }
-
-    await chatClient.sendMessage(channelName, message);
-    return { success: true };
-  } catch (error) {
-    return { success: false, error: error.message };
-  }
-});
-
-ipcMain.handle("chat:getChannels", () => {
-  const chatClient = twitchAuth.getChatClient();
-  if (!chatClient) {
-    return { success: false, channels: [] };
-  }
-
-  return { success: true, channels: chatClient.getChannels() };
 });
 
 // Server event broadcasting

@@ -1,99 +1,38 @@
-<div class="page-header">
-    <h2>Overlay Configuration</h2>
-    <p>Konfiguriere die Stream Overlays</p>
+<div class="mb-8">
+  <h2 class="text-3xl font-bold mb-2">Overlay Configuration</h2>
+  <p class="text-gray-400">Konfiguriere das Stream Overlay</p>
 </div>
 
-<div class="overlays-grid">
-    <div class="card">
-        <div class="card-header">
-            <h3>Timer Overlay</h3>
-        </div>
-        <div class="card-body">
-            <p class="text-muted">Zeigt den Subathon Timer im Stream an</p>
-
-            <div class="form-group">
-                <label>Overlay URL</label>
-                <div class="url-display">
-                    <input type="text" class="form-control" id="timer-overlay-url" value="http://localhost:8080/overlay/timer" readonly>
-                    <button class="btn btn-small btn-secondary" id="copy-timer-url-btn">Copy</button>
-                </div>
-            </div>
-
-            <button class="btn btn-primary" id="preview-timer-btn">Preview öffnen</button>
-        </div>
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+  <div class="card">
+    <div class="border-b border-dark-300 pb-4 mb-6">
+      <h3 class="text-xl font-bold">Timer Overlay</h3>
     </div>
+    <div class="space-y-4">
+      <p class="text-sm text-gray-400">Zeigt den Subathon Timer im Stream an</p>
 
-    <div class="card">
-        <div class="card-header">
-            <h3>Alerts Overlay</h3>
+      <div>
+        <label class="block text-sm font-medium mb-2">Overlay URL</label>
+        <div class="flex gap-2">
+          <input
+            type="text"
+            class="input-field flex-1"
+            id="timer-overlay-url"
+            value="http://localhost:8080/overlay/timer"
+            readonly
+          />
+          <button
+            class="btn-secondary whitespace-nowrap"
+            id="copy-timer-url-btn"
+          >
+            Copy
+          </button>
         </div>
-        <div class="card-body">
-            <p class="text-muted">Zeigt Event Alerts im Stream an</p>
+      </div>
 
-            <div class="form-group">
-                <label>Overlay URL</label>
-                <div class="url-display">
-                    <input type="text" class="form-control" id="alerts-overlay-url" value="http://localhost:8080/overlay/alerts" readonly>
-                    <button class="btn btn-small btn-secondary" id="copy-alerts-url-btn">Copy</button>
-                </div>
-            </div>
-
-            <button class="btn btn-primary" id="preview-alerts-btn">Preview öffnen</button>
-        </div>
+      <button class="btn-primary w-full" id="preview-timer-btn">
+        Preview öffnen
+      </button>
     </div>
-
-    <div class="card">
-        <div class="card-header">
-            <h3>Wheel Overlay</h3>
-        </div>
-        <div class="card-body">
-            <p class="text-muted">Glücksrad für besondere Events</p>
-
-            <div class="form-group">
-                <label>Overlay URL</label>
-                <div class="url-display">
-                    <input type="text" class="form-control" id="wheel-overlay-url" value="http://localhost:8080/overlay/wheel" readonly>
-                    <button class="btn btn-small btn-secondary" id="copy-wheel-url-btn">Copy</button>
-                </div>
-            </div>
-
-            <button class="btn btn-primary" id="preview-wheel-btn">Preview öffnen</button>
-        </div>
-    </div>
-
-    <div class="card">
-        <div class="card-header">
-            <h3>Chat Overlay</h3>
-        </div>
-        <div class="card-body">
-            <p class="text-muted">Synchronisierter Multi-Channel Chat</p>
-
-            <div class="form-group">
-                <label>Overlay URL</label>
-                <div class="url-display">
-                    <input type="text" class="form-control" id="chat-overlay-url" value="http://localhost:8080/overlay/chat" readonly>
-                    <button class="btn btn-small btn-secondary" id="copy-chat-url-btn">Copy</button>
-                </div>
-            </div>
-
-            <button class="btn btn-primary" id="preview-chat-btn">Preview öffnen</button>
-        </div>
-    </div>
+  </div>
 </div>
-
-<style>
-    .overlays-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-        gap: 24px;
-    }
-
-    .url-display {
-        display: flex;
-        gap: 8px;
-    }
-
-    .url-display input {
-        flex: 1;
-    }
-</style>

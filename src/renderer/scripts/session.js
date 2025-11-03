@@ -1,4 +1,3 @@
-let sessionLoaded = false;
 let sessionTimerInterval = null; // eslint-disable-line no-unused-vars
 
 console.log("[Session] Script loaded");
@@ -15,11 +14,9 @@ function setupSessionPage() {
   // Always update UI first to make buttons visible
   updateSessionView();
 
-  // Only attach event listeners and start interval once
-  if (!sessionLoaded) {
-    // Start timer updates for session view
+  // Start timer updates if not already running
+  if (!sessionTimerInterval) {
     startSessionTimerUpdates();
-    sessionLoaded = true;
   }
 
   // Always re-attach listeners because DOM elements are recreated

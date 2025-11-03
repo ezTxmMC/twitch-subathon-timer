@@ -12,8 +12,6 @@ window.currentTimerState = {
 // Alias for local access
 let currentTimerState = window.currentTimerState;
 
-let timerLoaded = false;
-
 console.log("[Timer] Script loaded");
 console.log("[Timer] api available at load time:", typeof api, api);
 
@@ -26,11 +24,12 @@ function setupTimerPage() {
   // Always update timer display first
   updateTimerDisplay();
 
-  // Only start sync and setup quick actions once
-  if (!timerLoaded) {
-    setupQuickActions();
+  // Setup quick actions (they clear themselves first)
+  setupQuickActions();
+
+  // Start sync if not already running
+  if (!timerInterval) {
     startTimerSync();
-    timerLoaded = true;
   }
 
   // Always re-attach listeners to prevent them from breaking
@@ -365,11 +364,16 @@ function updateTimerDisplay() {
     let statusText = "Stopped";
     let badgeClass = "badge-danger";
 
-    if (currentTimerState.running) {
+    if (currentTimerState.status === "RUNNING") {
       statusText = "Running";
       badgeClass = "badge-success";
-    } else if (currentTimerState.paused) {
+    }
+    if (currentTimerState.status === "PAUSED") {
       statusText = "Paused";
+      badgeClass = "badge-warning";
+    }
+    if (currentTimerState.status === "STOPPED") {
+      statusText = "Stopped";
       badgeClass = "badge-warning";
     }
 
@@ -387,6 +391,9 @@ electronAPI.on("timer-update", (timerData) => {
 function setupQuickActions() {
   const quickActionsContainer = document.querySelector(".quick-actions");
   if (!quickActionsContainer) return;
+
+  // Clear existing buttons to prevent duplicates
+  quickActionsContainer.innerHTML = "";
 
   const quickActions = [
     { seconds: 30, label: "+30s" },

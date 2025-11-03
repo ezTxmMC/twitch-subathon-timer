@@ -1,105 +1,131 @@
-<div class="page-header">
-    <h2>Timer Controls</h2>
-    <p>Steuere den Subathon Timer</p>
+<div class="mb-8">
+  <h2 class="text-3xl font-bold mb-2">Timer Controls</h2>
+  <p class="text-gray-400">Steuere den Subathon Timer</p>
 </div>
 
-<div class="timer-controls-container">
-    <div class="card">
-        <div class="card-header">
-            <h3>Timer</h3>
-        </div>
-        <div class="card-body">
-            <div class="timer-display" id="timer-display">00:00:00</div>
-            <div style="text-align: center; margin: 16px 0;">
-                <span class="badge badge-primary" id="timer-status">Stopped</span>
-            </div>
-
-            <div class="timer-buttons">
-                <button class="btn btn-success" id="start-timer-btn">Start</button>
-                <button class="btn btn-secondary" id="pause-timer-btn">Pause</button>
-                <button class="btn btn-danger" id="reset-timer-btn">Reset</button>
-            </div>
-        </div>
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+  <div class="card">
+    <div class="border-b border-dark-300 pb-4 mb-6">
+      <h3 class="text-xl font-bold">Timer</h3>
     </div>
+    <div>
+      <div
+        class="text-6xl font-bold text-center text-primary mb-4"
+        id="timer-display"
+      >
+        00:00:00
+      </div>
+      <div class="text-center mb-6">
+        <span
+          class="px-4 py-2 bg-primary text-white text-sm font-semibold rounded-full"
+          id="timer-status"
+          >Stopped</span
+        >
+      </div>
 
-    <div class="card">
-        <div class="card-header">
-            <h3>Zeit hinzufügen</h3>
-        </div>
-        <div class="card-body">
-            <div class="form-group">
-                <label>Sekunden</label>
-                <input type="number" class="form-control" id="add-time-seconds" min="1" value="60">
-            </div>
-
-            <div class="form-group">
-                <label>Grund (optional)</label>
-                <input type="text" class="form-control" id="add-time-reason" placeholder="z.B. Test Event">
-            </div>
-
-            <button class="btn btn-primary" id="add-time-btn">Zeit hinzufügen</button>
-        </div>
+      <div class="flex gap-3">
+        <button
+          class="flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold p-8 rounded-lg transition-colors"
+          id="start-timer-btn"
+        >
+          Start
+        </button>
+        <button class="flex-1 btn-secondary p-8" id="pause-timer-btn">
+          Pause
+        </button>
+        <button
+          class="flex-1 bg-red-600 hover:bg-red-700 text-white font-semibold p-8 rounded-lg transition-colors"
+          id="reset-timer-btn"
+        >
+          Reset
+        </button>
+      </div>
     </div>
+  </div>
 
-    <div class="card">
-        <div class="card-header">
-            <h3>Quick Actions</h3>
-        </div>
-        <div class="card-body">
-            <div class="quick-actions-grid">
-                <button class="btn btn-secondary quick-action-btn" data-seconds="30">+30s</button>
-                <button class="btn btn-secondary quick-action-btn" data-seconds="60">+1m</button>
-                <button class="btn btn-secondary quick-action-btn" data-seconds="300">+5m</button>
-                <button class="btn btn-secondary quick-action-btn" data-seconds="600">+10m</button>
-                <button class="btn btn-secondary quick-action-btn" data-seconds="1800">+30m</button>
-                <button class="btn btn-secondary quick-action-btn" data-seconds="3600">+1h</button>
-            </div>
-        </div>
+  <div class="card">
+    <div class="border-b border-dark-300 pb-4 mb-6">
+      <h3 class="text-xl font-bold">Quick Actions</h3>
     </div>
-
-    <div class="card">
-        <div class="card-header">
-            <h3>Test Events</h3>
-        </div>
-        <div class="card-body">
-            <p class="text-muted">Sende Test-Events an den Server</p>
-            <div class="test-buttons">
-                <button class="btn btn-small btn-secondary" id="test-follow-btn">Test Follow</button>
-                <button class="btn btn-small btn-secondary" id="test-sub-btn">Test Sub</button>
-                <button class="btn btn-small btn-secondary" id="test-giftsub-btn">Test Gift</button>
-                <button class="btn btn-small btn-secondary" id="test-bits-btn">Test Bits</button>
-                <button class="btn btn-small btn-secondary" id="test-raid-btn">Test Raid</button>
-            </div>
-        </div>
+    <div class="grid grid-cols-3 gap-3" id="quick-actions-container">
+      <button
+        class="btn-secondary p-8 w-50 h-50 quick-action-btn"
+        data-seconds="900"
+      >
+        Follow (15min)
+      </button>
+      <button
+        class="btn-secondary p-8 w-50 h-50 quick-action-btn"
+        data-seconds="150"
+      >
+        100 Bits (2,5min)
+      </button>
+      <button
+        class="btn-secondary p-8 w-50 h-50 quick-action-btn"
+        data-seconds="1500"
+      >
+        1000 Bits (25min)
+      </button>
+      <button
+        class="btn-secondary p-8 w-50 h-50 quick-action-btn"
+        data-seconds="1800"
+      >
+        Tier 1 Sub (30min)
+      </button>
+      <button
+        class="btn-secondary p-8 w-50 h-50 quick-action-btn"
+        data-seconds="2400"
+      >
+        Tier 2 Sub (40min)
+      </button>
+      <button
+        class="btn-secondary p-8 w-50 h-50 quick-action-btn"
+        data-seconds="3000"
+      >
+        Tier 3 Sub (50min)
+      </button>
+      <button
+        class="btn-secondary p-8 w-50 h-50 quick-action-btn"
+        data-seconds="2100"
+      >
+        Tier 1 Subgift (35min)
+      </button>
+      <button
+        class="btn-secondary p-8 w-50 h-50 quick-action-btn"
+        data-seconds="2700"
+      >
+        Tier 2 Subgift (45min)
+      </button>
+      <button
+        class="btn-secondary p-8 w-50 h-50 quick-action-btn"
+        data-seconds="3300"
+      >
+        Tier 3 Subgift (55min)
+      </button>
+      <button
+        class="btn-secondary p-8 w-50 h-50 quick-action-btn"
+        data-seconds="300"
+      >
+        Raid (5-10) (5min)
+      </button>
+      <button
+        class="btn-secondary p-8 w-50 h-50 quick-action-btn"
+        data-seconds="600"
+      >
+        Raid (11-30) (10min)
+      </button>
+      <button
+        class="btn-secondary p-8 w-50 h-50 quick-action-btn"
+        data-seconds="1200"
+      >
+        Raid (31-50) (20min)
+      </button>
+      <button
+        class="btn-secondary p-8 w-50 h-50 quick-action-btn"
+        data-seconds="2700"
+      >
+        Raid (50+) (45min)
+      </button>
     </div>
+  </div>
 </div>
-
-<style>
-    .timer-controls-container {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-        gap: 24px;
-    }
-
-    .timer-buttons {
-        display: flex;
-        gap: 12px;
-        margin-top: 24px;
-    }
-
-    .timer-buttons button {
-        flex: 1;
-    }
-
-    .quick-actions-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 12px;
-    }
-
-    .test-buttons {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-    }
-</style>
